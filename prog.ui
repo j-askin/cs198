@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1288</width>
-    <height>885</height>
+    <width>1920</width>
+    <height>1080</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>921</width>
-      <height>671</height>
+      <width>1501</width>
+      <height>801</height>
      </rect>
     </property>
     <property name="verticalScrollBarPolicy">
@@ -40,17 +40,17 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>898</width>
-       <height>648</height>
+       <width>1478</width>
+       <height>778</height>
       </rect>
      </property>
      <widget class="QLabel" name="imgHolder">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>881</width>
-        <height>631</height>
+        <x>0</x>
+        <y>0</y>
+        <width>1471</width>
+        <height>771</height>
        </rect>
       </property>
       <property name="text">
@@ -65,18 +65,18 @@
    <widget class="QTextBrowser" name="outputDisplay">
     <property name="geometry">
      <rect>
-      <x>930</x>
+      <x>1510</x>
       <y>10</y>
-      <width>351</width>
-      <height>461</height>
+      <width>400</width>
+      <height>460</height>
      </rect>
     </property>
    </widget>
    <widget class="QPushButton" name="changeImage">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>680</y>
+      <x>1200</x>
+      <y>810</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -88,8 +88,8 @@
    <widget class="QPushButton" name="startPointCount">
     <property name="geometry">
      <rect>
-      <x>820</x>
-      <y>680</y>
+      <x>1400</x>
+      <y>810</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -101,13 +101,39 @@
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="createGrid">
+    <property name="geometry">
+     <rect>
+      <x>1300</x>
+      <y>810</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Create Grid</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="imageSize">
+    <property name="geometry">
+     <rect>
+      <x>790</x>
+      <y>815</y>
+      <width>391</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1288</width>
+     <width>1920</width>
      <height>26</height>
     </rect>
    </property>
