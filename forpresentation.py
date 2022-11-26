@@ -63,7 +63,7 @@ class UI(qtw.QMainWindow):
         # displaying the size of the image
         self.imageSize.clear()
         self.imageSize.setAutoFillBackground(False)
-        self.imageSize.setText(f"Size of {self.img.split('/')[-1]}: {x} by {y} pixels")
+        self.imageSize.setText(f"{self.img.split('/')[-1]}: {x} by {y} pixels")
 
     def open_grid_settings(self):
         if self.img:
