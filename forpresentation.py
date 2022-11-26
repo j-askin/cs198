@@ -105,8 +105,9 @@ class UI(qtw.QMainWindow):
             self.crop(x_min, y_min, x_max, y_max, self.img, "cropped.png")
             self.scale("cropped.png", "resized.png")
             h, v = self.get_hough_2("resized.png", "detectedGrid2.png")
-            points = self.get_intersections("intersections.png", h, v)
-            self.get_images(points, "C:/Users/josh/Documents/School stuff/4thYr1stSem/CS 198/proj/sopia_data/SoPIA_20221017/Aggregates/SoPIA files/CRM-003-Fresh-Montalban (090919)/Sample under XPL.png")
+            src = "C:/Users/josh/Documents/School stuff/4thYr1stSem/CS 198/proj/sopia_data/SoPIA_20221017/Aggregates/SoPIA files/CRM-003-Fresh-Montalban (090919)/Sample under XPL.png"
+            points = self.get_intersections(src, "intersections.png", h, v)
+            self.get_images(points, src)
             self.processDone = qtw.QMainWindow()
             self.ui = Ui_errorMessage()
             self.ui.setupUi(self.processDone)
@@ -230,7 +231,7 @@ class UI(qtw.QMainWindow):
         
         return h_new, v_new
     
-    def get_intersections(self, path_save, h, v):
+    def get_intersections(self, path_open, path_save, h, v):
         points = []
         for i in h:
             for j in v:
@@ -239,18 +240,18 @@ class UI(qtw.QMainWindow):
                         if j[0][0] > 50 and j[0][0] < 1870 and i[0][1] > 50 and i[0][1] < 1150:
                             points.append((j[0][0], i[0][1]))
         points.sort(key=lambda x: (x[1], x[0]))
-        img_ref = cv2.imread("resized.png")
-        cyan = (255, 255, 0)
+        img_ref = cv2.imread(path_open)
+        yellow = (0, 255, 255)
         for i in points:
-            img_ref[i[1]][i[0]] = cyan
-            img_ref[i[1]+1][i[0]] = cyan
-            img_ref[i[1]-1][i[0]] = cyan
-            img_ref[i[1]][i[0]+1] = cyan
-            img_ref[i[1]][i[0]-1] = cyan
-            img_ref[i[1]+1][i[0]+1] = cyan
-            img_ref[i[1]+1][i[0]-1] = cyan
-            img_ref[i[1]-1][i[0]-1] = cyan
-            img_ref[i[1]-1][i[0]+1] = cyan
+            img_ref[i[1]][i[0]] = yellow
+            img_ref[i[1]+1][i[0]] = yellow
+            img_ref[i[1]-1][i[0]] = yellow
+            img_ref[i[1]][i[0]+1] = yellow
+            img_ref[i[1]][i[0]-1] = yellow
+            img_ref[i[1]+1][i[0]+1] = yellow
+            img_ref[i[1]+1][i[0]-1] = yellow
+            img_ref[i[1]-1][i[0]-1] = yellow
+            img_ref[i[1]-1][i[0]+1] = yellow
         cv2.imwrite(path_save, img_ref)
         return points
     
