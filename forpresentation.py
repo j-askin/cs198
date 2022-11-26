@@ -107,6 +107,12 @@ class UI(qtw.QMainWindow):
             h, v = self.get_hough_2("resized.png", "detectedGrid2.png")
             points = self.get_intersections("intersections.png", h, v)
             self.get_images(points, "C:/Users/josh/Documents/School stuff/4thYr1stSem/CS 198/proj/sopia_data/SoPIA_20221017/Aggregates/SoPIA files/CRM-003-Fresh-Montalban (090919)/Sample under XPL.png")
+            self.processDone = qtw.QMainWindow()
+            self.ui = Ui_errorMessage()
+            self.ui.setupUi(self.processDone)
+            self.processDone.setWindowTitle("Done")
+            self.ui.errorLabel.setText("Process finished.")
+            self.processDone.show()
         return
 
     def get_hough(self, path_open, path_save):
@@ -253,14 +259,18 @@ class UI(qtw.QMainWindow):
         img_data = np.array(img)
         temp = Image.new('L', img.size, 0)
         circle_mask = ImageDraw.Draw(temp)
+        coords = ""
         for i in range(len(points)):
+            coords += f"({i%10}, {i//10})  ({points[i][0]}, {points[i][1]})\n"
             circle_mask.pieslice(((points[i][0]-25, points[i][1]-25), (points[i][0]+25, points[i][1]+25)), 0, 360, fill = 255)
             mask = np.array(temp)
             cropped = np.dstack((img_data, mask))
             circle = Image.fromarray(cropped).crop((points[i][0]-25, points[i][1]-25, points[i][0]+26, points[i][1]+26)).resize((510,510))
-            circle.save(f"temp/{path_open.split('/')[-1].split('.')[0]}_({i%10},{i//10})_{points[i][0]}_{points[i][1]}_50.png")
+            circle.save(f"C:/Users/josh/Desktop/App Output/images/{path_open.split('/')[-1].split('.')[0]}_({i%10},{i//10})_{points[i][0]}_{points[i][1]}_51.png")
+        file = open("C:/Users/josh/Desktop/App Output/coordinates.txt", "w+")
+        file.write(coords)
+        file.close()
         return
-
 
 app = qtw.QApplication(sys.argv)
 window = UI()
