@@ -202,7 +202,7 @@ class UI(qtw.QMainWindow):
             for v in range(len(v_lines)):
                 coords += f"({h}, {v})  ({h_lines[h][0]}, {v_lines[v][1]})\n"
                 cv2.circle(im_cv, (h_lines[h][0],v_lines[v][1]),5,(255,0,0),thickness = 5)
-                cv2.circle(cv_gridimg, (h_lines[h][0],v_lines[v][1]),25,(255,0,0),thickness = 1)
+                cv2.circle(cv_gridimg, (h_lines[h][0],v_lines[v][1]),25,(0,255,0),thickness = 2)
                 r1=h_lines[h][0]-pt_rad
                 r2=h_lines[h][0]+pt_rad
                 r3=v_lines[v][1]-pt_rad
