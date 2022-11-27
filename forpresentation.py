@@ -65,7 +65,7 @@ class UI(qtw.QMainWindow):
             self.gridimg = fname[0][:-4]+"_grid"+fname[0][-4:]
             self.gridImageRadio.setEnabled(True)
         else:
-            qtw.QFileDialog.getOpenFileName(self, "Select Grid Image", "", "PNG/JPG Files (*.jpg *.png)")
+            fname = qtw.QFileDialog.getOpenFileName(self, "Select Grid Image", "", "PNG/JPG Files (*.jpg *.png)")
             if fname[0]:
                 self.gridimg = fname[0]
                 self.gridImageRadio.setEnabled(True)
@@ -76,7 +76,7 @@ class UI(qtw.QMainWindow):
             self.segimg = fname[0][:-4]+"_seg"+fname[0][-4:]
             self.segImageRadio.setEnabled(True)
         else:
-            qtw.QFileDialog.getOpenFileName(self, "Select Segmented Image", "", "PNG/JPG Files (*.jpg *.png)")
+            fname = qtw.QFileDialog.getOpenFileName(self, "Select Segmented Image", "", "PNG/JPG Files (*.jpg *.png)")
             if fname[0]:
                 self.segimg = fname[0]
                 self.segImageRadio.setEnabled(True)
@@ -127,7 +127,7 @@ class UI(qtw.QMainWindow):
             self.notif.setIcon(qtw.QMessageBox.Critical)
             self.notif.setText("Please select an image before creating a grid.")
             self.notif.setWindowTitle("Error")
-            self.notf.exec()
+            self.notif.exec()
 
     def move_grid_h(self, value):
         y = self.gridLabel.y()
@@ -174,12 +174,12 @@ class UI(qtw.QMainWindow):
         im_cv = cv2.bitwise_and(hsv_img,hsv_img,mask=mask_img)
         cv2.imwrite(os.path.join(savePath,"Filter.png"),im_cv)
         im_g = cv2.cvtColor(im_cv,cv2.COLOR_RGB2GRAY)
-        edges = cv2.Canny(im_g, 50, 200, None, 3)
-        cv2.imwrite("edge.png",edges)
-        lines = cv2.HoughLines(edges, 3, np.pi/2, 500)
+        edges = cv2.Canny(im_g, 50, 200, None, apertureSize=3)
+        cv2.imwrite(os.path.join(savePath,"edge.png"),edges)
+        lines = cv2.HoughLines(edges, 3, np.pi/180, 500)
         h_lines, v_lines = [],[]
         for line in lines:
-            print(line)
+            # print(line)
             rho = line[0][0]
             theta = line[0][1]
             a = np.cos(theta)
@@ -193,21 +193,29 @@ class UI(qtw.QMainWindow):
             else:
                 v_lines.append(pt2)
             cv2.line(im_cv, pt1, pt2, (0,0,255), 3, cv2.LINE_AA)
+        h_lines.sort(key=lambda x: x[0])
+        v_lines.sort(key=lambda x: x[1])
+        coords = ""
+        blank_mask = np.zeros((50,50,3), np.uint8)
+        cv2.circle(blank_mask, (25,25),25,(255,255,255),thickness = -1)
         for h in range(len(h_lines)):
             for v in range(len(v_lines)):
+                coords += f"({h}, {v})  ({h_lines[h][0]}, {v_lines[v][1]})\n"
                 cv2.circle(im_cv, (h_lines[h][0],v_lines[v][1]),5,(255,0,0),thickness = 5)
                 cv2.circle(cv_gridimg, (h_lines[h][0],v_lines[v][1]),25,(255,0,0),thickness = 1)
                 r1=h_lines[h][0]-pt_rad
                 r2=h_lines[h][0]+pt_rad
                 r3=v_lines[v][1]-pt_rad
                 r4=v_lines[v][1]+pt_rad
-                cv2.imwrite(os.path.join(pt_path,f"{os.path.split(self.img)[1].split('.')[0]}_({h},{v})_{h_lines[h][0]}_{v_lines[v][1]})_51.png"),cv_img[r3:r4,r1:r2])
+                temp = cv2.cvtColor(cv_img[r3:r4,r1:r2], cv2.COLOR_BGR2BGRA)
+                temp[:, :, 3] = blank_mask[:,:,0]
+                cv2.imwrite(os.path.join(pt_path,f"{os.path.split(self.img)[1].split('.')[0]}_({h},{v})_{h_lines[h][0]}_{v_lines[v][1]}_50.png"),temp)
         cv2.imwrite(os.path.join(savePath,"output_grid.png"),im_cv)
         cv2.imwrite(os.path.join(savePath,"output.png"),cv_gridimg)
+        file = open(f"{savePath}/coordinates.txt", "w+")
+        file.write(coords)
+        file.close()
         self.imageText.setText(f"Points written to\n{savePath}")
-
-
-
 
     def spc(self):
         # if there is an image displayed

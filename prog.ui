@@ -70,27 +70,33 @@
     <property name="geometry">
      <rect>
       <x>980</x>
-      <y>370</y>
-      <width>281</width>
-      <height>41</height>
+      <y>360</y>
+      <width>291</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="autoFillBackground">
      <bool>false</bool>
     </property>
-    <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-    </property>
     <property name="text">
      <string>Select an image to load.</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QRadioButton" name="normImageRadio">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>980</x>
-      <y>410</y>
-      <width>100</width>
+      <y>430</y>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
@@ -100,19 +106,16 @@
     <property name="checked">
      <bool>true</bool>
     </property>
+   </widget>
+   <widget class="QRadioButton" name="gridImageRadio">
     <property name="enabled">
      <bool>false</bool>
     </property>
-    <attribute name="buttonGroup">
-     <string notr="true">imageRadio</string>
-    </attribute>
-   </widget>
-   <widget class="QRadioButton" name="gridImageRadio">
     <property name="geometry">
      <rect>
       <x>980</x>
-      <y>430</y>
-      <width>100</width>
+      <y>450</y>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
@@ -122,19 +125,16 @@
     <property name="checked">
      <bool>false</bool>
     </property>
+   </widget>
+   <widget class="QRadioButton" name="segImageRadio">
     <property name="enabled">
      <bool>false</bool>
     </property>
-    <attribute name="buttonGroup">
-     <string notr="true">imageRadio</string>
-    </attribute>
-   </widget>
-   <widget class="QRadioButton" name="segImageRadio">
     <property name="geometry">
      <rect>
       <x>980</x>
-      <y>450</y>
-      <width>120</width>
+      <y>470</y>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
@@ -144,12 +144,6 @@
     <property name="checked">
      <bool>false</bool>
     </property>
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <attribute name="buttonGroup">
-     <string notr="true">imageRadio</string>
-    </attribute>
    </widget>
    <widget class="QGraphicsView" name="imageDisplay">
     <property name="geometry">
