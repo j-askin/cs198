@@ -66,13 +66,13 @@
      <string>Create Grid</string>
     </property>
    </widget>
-   <widget class="QLabel" name="imageSize">
+   <widget class="QLabel" name="imageText">
     <property name="geometry">
      <rect>
       <x>980</x>
       <y>370</y>
       <width>281</width>
-      <height>21</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -81,6 +81,75 @@
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
+    <property name="text">
+     <string>Select an image to load.</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="normImageRadio">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>410</y>
+      <width>100</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Normal Image</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <attribute name="buttonGroup">
+     <string notr="true">imageRadio</string>
+    </attribute>
+   </widget>
+   <widget class="QRadioButton" name="gridImageRadio">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>430</y>
+      <width>100</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Grid Image</string>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <attribute name="buttonGroup">
+     <string notr="true">imageRadio</string>
+    </attribute>
+   </widget>
+   <widget class="QRadioButton" name="segImageRadio">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>450</y>
+      <width>120</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Segmented Image</string>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <attribute name="buttonGroup">
+     <string notr="true">imageRadio</string>
+    </attribute>
    </widget>
    <widget class="QGraphicsView" name="imageDisplay">
     <property name="geometry">

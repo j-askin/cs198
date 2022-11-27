@@ -2,7 +2,6 @@ import PyQt5.QtWidgets as qtw
 from PyQt5 import uic
 import sys
 from PIL import Image
-from error import Ui_errorMessage
 
 class Grid(qtw.QMainWindow):
     def __init__(self, parent):
@@ -10,6 +9,7 @@ class Grid(qtw.QMainWindow):
 
         uic.loadUi("grid.ui", self)
 
+        self.notif = qtw.QMessageBox()
         self.submitSize.clicked.connect(self.create_grid)
         self.show()
     
@@ -79,12 +79,11 @@ class Grid(qtw.QMainWindow):
         return v_count, v_space, h_count, h_space
 
     def show_error(self, x):
-        self.window = qtw.QMainWindow()
-        self.ui = Ui_errorMessage()
-        self.ui.setupUi(self.window)
-        if x:
-            self.ui.errorLabel.setText("All inputs must be greater than 0.")
-        self.window.show()
+        self.notif.setIcon(qtw.QMessageBox.Critical)
+        self.notif.setText("All inputs must be greater than 0.")
+        self.notif.setWindowTitle("Error")
+        self.notf.exec()
+
         self.lineEdit.clear()
         self.lineEdit_2.clear()
         self.lineEdit_3.clear()
