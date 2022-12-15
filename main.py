@@ -1,24 +1,37 @@
 import PyQt5.QtWidgets as qtw
 from PyQt5 import uic
-from PyQt5.QtGui import QPixmap
+import PyQt5.QtCore as qtc
+from PyQt5.QtGui import QPixmap, QImage, QColor
 import sys, os, cv2, time
-from PIL import Image
 import numpy as np
 
+#Uses the modified mmsegmentation package. Make sure to install it first!
+from mmseg.apis import inference_segmentor, init_segmentor
+import mmcv
 
 class UI(qtw.QMainWindow):
     # the paths of the images to be used for point counting
     img, gridimg, segimg,  = "","",""
+    image = None
     # paths for model config and weights
     cfg, mdl, pth = "", "", ""
     t_buttonstate = [True,True,True,True]
     t_radiostate = [False,False,False]
+    border_color = (255,136,255) #border color in RGB
+    grid_color = (20,231,204) #grid color in RGB
+    color_select = 0
+    #cfg_path = "mmsegmentation/configs/deeplabv3plus/sopia.py"
+    #pth_path = "mmsegmentation/work_dirs/sopia/sopia.pth"
     
+    
+    cfg_path = "mmsegmentation/configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py"
+    pth_path = "mmsegmentation/work_dirs/cityscapes/pspnet_r50-d8_512x1024_40k_cityscapes.pth"
     def __init__(self):
         super(UI, self).__init__()
-
+        self.init_paths()
         # prog.ui contains the layout of the app resulting from Qt Designer
-        uic.loadUi("sopia_ui.ui", self)
+        ui_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "sopia_ui.ui"))
+        uic.loadUi(ui_path, self)
 
         #notification popup
         self.notif = qtw.QMessageBox()
@@ -28,42 +41,89 @@ class UI(qtw.QMainWindow):
         self.loadModel.clicked.connect(self.load_model)
         self.segmentImage.clicked.connect(self.segment_image)
         self.getPoints.clicked.connect(self.get_points)
+        self.selectBorder.clicked.connect(self.select_border)
+        self.selectGrid.clicked.connect(self.select_grid)
 
         # Connect radio buttons to load images
         self.normImageRadio.clicked.connect(self.radio_image)
         self.gridImageRadio.clicked.connect(self.radio_image)
         self.segImageRadio.clicked.connect(self.radio_image)
-
+        self.imageDisplay.mousePressEvent = (self.get_color)
         self.scene = qtw.QGraphicsScene()
+        self.imageDisplay.setScene(self.scene)
+        self.show_color()
+
         self.gridLabel = qtw.QLabel()
         self.gridLabel.hide()
         self.show()
 
+    def init_paths(self):
+        if not os.path.exists(os.path.join(os.getcwd(),"data")):
+            os.mkdir(os.path.join(os.getcwd(),"data"))
+        if not os.path.exists(os.path.join(os.getcwd(),"save")):
+            os.mkdir(os.path.join(os.getcwd(),"data"))
+
     def lock_ui(self):
-        self.t_buttonstate = [self.loadImage.isEnabled(),self.loadModel.isEnabled(),self.segmentImage.isEnabled(),self.getPoints.isEnabled()]
+        self.t_buttonstate = [self.loadImage.isEnabled(),self.loadModel.isEnabled(),self.segmentImage.isEnabled(),self.getPoints.isEnabled(),self.selectBorder.isEnabled(),self.selectGrid.isEnabled()]
         self.t_radiostate = [self.normImageRadio.isEnabled(),self.gridImageRadio.isEnabled(),self.segImageRadio.isEnabled()]
         self.loadImage.setEnabled(False)
         self.loadModel.setEnabled(False)
         self.segmentImage.setEnabled(False)
         self.getPoints.setEnabled(False)
+        self.selectBorder.setEnabled(False)
+        self.selectGrid.setEnabled(False)
         self.normImageRadio.setEnabled(False)
         self.gridImageRadio.setEnabled(False)
         self.segImageRadio.setEnabled(False)
+        time.sleep(0.1)
 
     def unlock_ui(self):
+        time.sleep(0.1)
         self.loadImage.setEnabled(self.t_buttonstate[0])
         self.loadModel.setEnabled(self.t_buttonstate[1])
         self.segmentImage.setEnabled(self.t_buttonstate[2])
         self.getPoints.setEnabled(self.t_buttonstate[3])
+        self.selectBorder.setEnabled(self.t_buttonstate[4])
+        self.selectGrid.setEnabled(self.t_buttonstate[5])
         self.normImageRadio.setEnabled(self.t_radiostate[0])
         self.gridImageRadio.setEnabled(self.t_radiostate[1])
         self.segImageRadio.setEnabled(self.t_radiostate[2])
 
 
+    def select_border(self):
+        self.lock_ui()
+        self.color_select = 1
+
+    def select_grid(self):
+        self.lock_ui()
+        self.color_select = 2
+
+    def get_color(self,event):
+        x = event.pos().x()
+        y = event.pos().y()
+        if self.image is not None:
+            pixcol = QColor(self.image.pixel(x+self.imageDisplay.horizontalScrollBar().value(),y+self.imageDisplay.verticalScrollBar().value())).getRgb()[:3]
+            print(f"Position: ({x+self.imageDisplay.horizontalScrollBar().value()},{y+self.imageDisplay.verticalScrollBar().value()})")
+            print(f"Pixel Color: {pixcol}")
+            if self.color_select == 0:
+                return
+            elif self.color_select == 1:
+                self.border_color = pixcol
+            elif self.color_select == 2:
+                self.grid_color = pixcol
+            self.show_color()
+            self.color_select = 0
+            self.unlock_ui()
+
+    def show_color(self):
+        self.borderColorLabel.setStyleSheet("background-color: rgb{};".format(self.border_color))
+        self.gridColorLabel.setStyleSheet("background-color: rgb{};".format(self.grid_color))
+
+
     def load_image(self):
         self.lock_ui()
         # currently only accepting PNG files, but can be changed in the future just in case
-        fname = qtw.QFileDialog.getOpenFileName(self, "Select Non-Grid Image", "", "PNG/JPG Files (*.jpg *.png)")
+        fname = qtw.QFileDialog.getOpenFileName(self, "Select Non-Grid Image", "data", "PNG/JPG Files (*.jpg *.png)")
         # fname[0] is the filepath
         if fname[0]:
             self.img = fname[0]
@@ -73,24 +133,24 @@ class UI(qtw.QMainWindow):
                 self.gridimg = fname[0][:-4]+"_grid"+fname[0][-4:]
                 self.t_radiostate[1] = True
             else:
-                fname = qtw.QFileDialog.getOpenFileName(self, "Select Grid Image", "", "PNG/JPG Files (*.jpg *.png)")
+                fname = qtw.QFileDialog.getOpenFileName(self, "Select Grid Image", "data", "PNG/JPG Files (*.jpg *.png)")
                 if fname[0]:
                     self.gridimg = fname[0]
-                    self.t_radiostate[0] = True
+                    self.t_radiostate[1] = True
                 else:
                     self.gridimg = ""
                     self.t_radiostate[1] = False
             if os.path.exists(fname[0][:-4]+"_seg"+fname[0][-4:]):
                 self.segimg = fname[0][:-4]+"_seg"+fname[0][-4:]
-                self.segImageRadio.setEnabled(True)
+                self.t_radiostate[2] = True
             else:
-                fname = qtw.QFileDialog.getOpenFileName(self, "Select Segmented Image", "", "PNG/JPG Files (*.jpg *.png)")
+                fname = qtw.QFileDialog.getOpenFileName(self, "Select Segmented Image", "data", "PNG/JPG Files (*.jpg *.png)")
                 if fname[0]:
                     self.segimg = fname[0]
                     self.t_radiostate[2] = True
                 else:
-                    self.t_radiostate[2] = False
                     self.segimg = ""
+                    self.t_radiostate[2] = False
         else:
             self.img = ""
             self.t_radiostate[0] = False
@@ -111,87 +171,93 @@ class UI(qtw.QMainWindow):
     def show_image(self,img):
         self.imageText.clear()
         self.imageText.setAutoFillBackground(False)
+        self.scene.clear()
         #check if path to image exists
         if len(img) == 0:
             self.imageText.setText("Unable to load image.\nPlease reload all images.")
+            self.image = None
             return
 
-        self.sample = QPixmap(img)
-        rgb_image = Image.open(img).convert("RGB")
+        self.image = QImage(img)
+        self.sample = QPixmap(QPixmap.fromImage(self.image))#.scaled(self.imageDisplay.width()-10,self.imageDisplay.height()-10,qtc.Qt.KeepAspectRatio,qtc.Qt.SmoothTransformation)
+        self.imageDisplay.setSceneRect(0, 0, self.sample.width(),self.sample.height())
 
-        # resize the image
-        x, y = rgb_image.size
-        x2 = 1024 if x < 1024 else x
-        y2 = 512 if y < 512 else y
-
-        self.imageDisplay.setScene(self.scene)
-        self.imageDisplay.setSceneRect(0, 0, x2, y2)
         self.scene.addPixmap(self.sample)
 
         # displaying the size of the image
-        self.imageText.setText(f"Loaded {img.split('/')[-1]}: {x} by {y} pixels")
+        self.imageText.setText(f"Loaded {img.split('/')[-1]}")
         print("Displayed image")
 
     def load_model(self):
         self.lock_ui()
-        if os.path.exists(os.path.join(os.getcwd(),"model/pspnet_r50-d8_512x1024_40k_cityscapes.py")):
-            self.cfg = "model/pspnet_r50-d8_512x1024_40k_cityscapes.py"
+        if os.path.exists(os.path.join(os.getcwd(),self.cfg_path)):
+            self.cfg = self.cfg_path
         else:
-            fname = qtw.QFileDialog.getOpenFileName(self, "Select Config File", "", "Python File (*.py)")
+            fname = qtw.QFileDialog.getOpenFileName(self, "Select Config File", "mmsegmentation/configs/", "Python File (*.py)")
             if fname[0]:
                 self.cfg = fname[0]
             else:
                 self.cfg = ""
-            return
-        if os.path.exists(os.path.join(os.getcwd(),"model/pspnet_r50-d8_512x1024_40k_cityscapes_.pth")):
-            self.pth = "model/pspnet_r50-d8_512x1024_40k_cityscapes_.pth"
+                self.unlock_ui()
+                return
+        if os.path.exists(os.path.join(os.getcwd(),self.pth_path)):
+            self.pth = self.pth_path
         else:
-            fname = qtw.QFileDialog.getOpenFileName(self, "Select Weights", "", "PTH File (*.pth)")
+            fname = qtw.QFileDialog.getOpenFileName(self, "Select Weights", "mmsegmentation/work_dirs/sopia/", "PTH File (*.pth)")
             if fname[0]:
                 self.pth = fname[0]
             else:
-                self.mdl = ""
+                self.cfg = ""
                 self.pth = ""
                 self.unlock_ui()
                 return
         self.imageText.setText("Loading model...")
         print("Loading model...")
-        from mmseg.apis import inference_segmentor, init_segmentor
-        import mmcv
-        print(self.cfg)
-        print(self.pth)
-        self.mdl = init_segmentor(self.cfg, self.pth, device='cuda:0')
+        if True:
+        #try:
+            self.mdl = init_segmentor(self.cfg, self.pth, device='cuda:0')
+            print("Loaded model.")
+        #except Exception as e:
+        #    print(e)
+        #    print("Unable to load model.")
+        #    self.mdl = ""
         self.unlock_ui()
-        print("Loaded model.")
 
 
     def segment_image(self):
         self.lock_ui()
-        from mmseg.apis import inference_segmentor, init_segmentor
-        import mmcv
-        out_path = self.img[:-4]+"_seg"+self.img[-4:]
-        clear_path=self.img[:-4]+"_seg2"+self.img[-4:]
-        self.imageText.setText("")
         if self.img == "":
-            self.imageText.setText("Please load an image first.\n")
-        if self.mdl == "":
-            self.imageText.setText(self.imageText.text()+"Please load a model first.")
-        else:
-            result = inference_segmentor(self.mdl,self.img)
-            self.mdl.show_result(self.img,result, out_file=out_path,opacity=1.0)
-            self.mdl.show_result(self.img,result, out_file=clear_path,opacity=0.5)
-            self.segimg = out_path
-            self.t_radiostate[2] = True
+            self.imageText.setText("Please load an image first.")
+        elif self.mdl == "":
+            self.imageText.setText("Please load a model first.")
+        elif self.mdl is not None:
+            print("Segmenting image...")
+            try:
+                out_path = self.img[:-4]+"_seg"+self.img[-4:]
+                clear_path=self.img[:-4]+"_seg2"+self.img[-4:]
+                result = inference_segmentor(self.mdl,self.img)
+                self.mdl.show_result(self.img,result, out_file=out_path,opacity=1.0)
+                self.mdl.show_result(self.img,result, out_file=clear_path,opacity=0.5)
+                self.segimg = out_path
+                print("Segmentation complete.")
+                self.t_radiostate[2] = True
+                self.imageText.setText("Segmented image generated.")
+            except:
+                self.imageText.setText("Unable to segment image.")
         self.unlock_ui()
-        print("Segmented image generated.")
 
     def get_points(self):
         self.lock_ui()
         #set boundaries for grid color in HSV format
-        grid_colorl = np.array((90,200,200))
-        grid_coloru = np.array((100,255,255))
-        border_colorl = np.array((140,110,220))
-        border_coloru = np.array((160,120,255))
+        border_hsv = cv2.cvtColor(np.uint8([[self.border_color]]),cv2.COLOR_RGB2HSV)[0][0]
+        grid_hsv = cv2.cvtColor(np.uint8([[self.grid_color]]),cv2.COLOR_RGB2HSV)[0][0]
+        border_colorl=np.clip([i-5 for i in border_hsv],a_min=0,a_max=[179,255,255])
+        border_coloru=np.clip([i+5 for i in border_hsv],a_min=0,a_max=[179,255,255])
+        grid_colorl=np.clip([i-15 for i in grid_hsv],a_min=0,a_max=[179,255,255])
+        grid_coloru=np.clip([i+15 for i in grid_hsv],a_min=0,a_max=[179,255,255])
+        print(self.border_color)
+        print(self.grid_color)
+
         pt_rad = 25 #radius of drawn points
 
         #generate output directory
@@ -221,26 +287,26 @@ class UI(qtw.QMainWindow):
         #filter grid and borders before getting lines
         img_l,img_w = cv_img.shape[0],cv_img.shape[1]
         hsv_img = cv2.cvtColor(cv_gridimg,cv2.COLOR_BGR2HSV)
-        #cv2.imwrite(os.path.join(savePath,"hsv.png"),hsv_img)
+        cv2.imwrite(os.path.join(savePath,"hsv.png"),hsv_img)
         
         bordermask_img = cv2.inRange(hsv_img,border_colorl,border_coloru)
         borderim_cv = cv2.bitwise_and(hsv_img,hsv_img,mask=bordermask_img)
         borderim_g = cv2.cvtColor(borderim_cv,cv2.COLOR_RGB2GRAY)
         borderedges = cv2.Canny(borderim_g, 50, 200, None, apertureSize=3)
-        #cv2.imwrite(os.path.join(savePath,"bordermask.png"),bordermask_img)
-        #cv2.imwrite(os.path.join(savePath,"Border Filter.png"),borderim_cv)
-        #cv2.imwrite(os.path.join(savePath,"border.png"),borderedges)
+        cv2.imwrite(os.path.join(savePath,"bordermask.png"),bordermask_img)
+        cv2.imwrite(os.path.join(savePath,"Border Filter.png"),borderim_cv)
+        cv2.imwrite(os.path.join(savePath,"border.png"),borderedges)
 
         gridmask_img = cv2.inRange(hsv_img,grid_colorl,grid_coloru)
         gridim_cv = cv2.bitwise_and(hsv_img,hsv_img,mask=gridmask_img)
         gridim_g = cv2.cvtColor(gridim_cv,cv2.COLOR_RGB2GRAY)
         gridedges = cv2.Canny(gridim_g, 50, 200, None, apertureSize=3)
-        #cv2.imwrite(os.path.join(savePath,"gridmask.png"),gridmask_img)
-        #cv2.imwrite(os.path.join(savePath,"Grid Filter.png"),gridim_cv)
-        #cv2.imwrite(os.path.join(savePath,"edge.png"),gridedges)
+        cv2.imwrite(os.path.join(savePath,"gridmask.png"),gridmask_img)
+        cv2.imwrite(os.path.join(savePath,"Grid Filter.png"),gridim_cv)
+        cv2.imwrite(os.path.join(savePath,"edge.png"),gridedges)
 
         #First hough transform: obtain locations of image borders
-        lines = cv2.HoughLines(borderedges, 3, np.pi/180, 500)
+        lines = cv2.HoughLines(borderedges, 1, np.pi/180, 500)
         h_lines, v_lines = [],[]
         for line in lines:
             rho = line[0][0]
@@ -269,7 +335,7 @@ class UI(qtw.QMainWindow):
         cv2.imwrite(os.path.join(savePath,"output_border.png"),borderim_cv)
 
         #Second hough transform: obtain coordinates of grid intersections
-        lines = cv2.HoughLines(gridedges, 3, np.pi/180, 500)
+        lines = cv2.HoughLines(gridedges, 1, np.pi/180, 500)
         h_lines, v_lines = [],[]
         for line in lines:
             rho = line[0][0]
