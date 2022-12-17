@@ -61,7 +61,7 @@ class UI(qtw.QMainWindow):
         if not os.path.exists(os.path.join(os.getcwd(),"data")):
             os.mkdir(os.path.join(os.getcwd(),"data"))
         if not os.path.exists(os.path.join(os.getcwd(),"save")):
-            os.mkdir(os.path.join(os.getcwd(),"data"))
+            os.mkdir(os.path.join(os.getcwd(),"save"))
 
     def lock_ui(self):
         self.t_buttonstate = [self.loadImage.isEnabled(),self.loadModel.isEnabled(),self.segmentImage.isEnabled(),self.getPoints.isEnabled(),self.selectBorder.isEnabled(),self.selectGrid.isEnabled()]
