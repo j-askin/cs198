@@ -5,7 +5,7 @@ import sys, os, cv2, time
 from PIL import Image
 import numpy as np
 from grid import Grid
-from mmseg.apis import inference_segmentor, init_segmentor
+from mmseg.apis import inference_segmentor, init_segmentor, show_result_pyplot
 import mmcv
 
 
@@ -155,33 +155,38 @@ class UI(qtw.QMainWindow):
         try:
             self.mdl = init_segmentor(self.cfg, self.pth, device='cuda:0')
             print("Loaded model.")
-        except Exception as e:
-            if e == "Torch not compiled with CUDA enabled":
-                print("Attempting to load model without CUDA>")
+        except AssertionError as e:
+            if e:
                 try:
-                    self.mdl = init_segmentor(self.cfg, self.pth)
+                    self.mdl = init_segmentor(self.cfg, self.pth, device='cpu')
+                    print("Loaded model.")
                 except:
                     print("Unable to load model.")
-            else:
-                self.mdl = ""
-                print("Unable to load model.")
+        except Exception as e:
+            print("Unable to load model.")
+            self.mdl = ""
+        finally:
+            self.unlock_ui()
         self.unlock_ui()
 
     def segment_image(self):
         self.lock_ui()
-        out_path = self.img[:-4]+"_seg"+self.img[-4:]
-        clear_path=self.img[:-4]+"_seg2"+self.img[-4:]
-        self.imageText.setText("")
         if self.img == "":
-            self.imageText.setText("Please load an image first.\n")
-        if self.mdl == "":
-            self.imageText.setText(self.imageText.text()+"Please load a model first.")
-        else:
-            result = inference_segmentor(self.mdl,self.img)
-            self.mdl.show_result(self.img, result, out_file=out_path, opacity=1.0)
-            self.mdl.show_result(self.img, result, out_file=clear_path, opacity=0.5)
-            self.segimg = out_path
-            self.t_radiostate[2] = True
+            self.imageText.setText("Please load an image first.")
+        elif self.mdl == "":
+            self.imageText.setText("Please load a model first.")
+        elif self.mdl is not None:
+            print("Segmenting image...")
+            try:
+                out_path = self.img[:-4]+"_seg"+self.img[-4:]
+                result = inference_segmentor(self.mdl,self.img)
+                show_result_pyplot(self.mdl, self.img, result, out_file=out_path)
+                self.segimg = out_path
+                print("Segmentation complete.")
+                self.t_radiostate[2] = True
+                self.imageText.setText("Segmented image generated.")
+            except:
+                self.imageText.setText("Unable to segment image.")
         self.unlock_ui()
         print("Segmented image generated.")
         return
