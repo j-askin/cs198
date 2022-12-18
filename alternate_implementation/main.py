@@ -17,6 +17,9 @@ class UI(qtw.QMainWindow):
     t_buttonstate = [True,True,True,True,True]
     t_radiostate = [False,False,False]
     
+    cfg_path = "mmsegmentation/configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py"
+    pth_path = "mmsegmentation/work_dirs/cityscapes/pspnet_r50-d8_512x1024_40k_cityscapes.pth"
+
     def __init__(self):
         super(UI, self).__init__()
 
@@ -154,15 +157,19 @@ class UI(qtw.QMainWindow):
         print("Loading model...")
         try:
             self.mdl = init_segmentor(self.cfg, self.pth, device='cuda:0')
+            self.imageText.setText("Loaded model.")
             print("Loaded model.")
         except AssertionError as e:
             if e:
                 try:
                     self.mdl = init_segmentor(self.cfg, self.pth, device='cpu')
+                    self.imageText.setText("Loaded model.")
                     print("Loaded model.")
                 except:
+                    self.imageText.setText("Unable to load model.")
                     print("Unable to load model.")
         except Exception as e:
+            self.imageText.setText("Unable to load model.")
             print("Unable to load model.")
             self.mdl = ""
         finally:
@@ -176,6 +183,7 @@ class UI(qtw.QMainWindow):
         elif self.mdl == "":
             self.imageText.setText("Please load a model first.")
         elif self.mdl is not None:
+            self.imageText.setText("Segmenting image...")
             print("Segmenting image...")
             try:
                 out_path = self.img[:-4]+"_seg"+self.img[-4:]
