@@ -129,46 +129,43 @@ class UI(qtw.QMainWindow):
 
     def load_model(self):
         self.lock_ui()
-        if os.path.exists(os.path.join(os.getcwd(),"model/pspnet_r50-d8_512x1024_40k_cityscapes.py")):
-            self.cfg = "model/pspnet_r50-d8_512x1024_40k_cityscapes.py"
+        if os.path.exists(os.path.join(os.getcwd(),self.cfg_path)):
+            self.cfg = self.cfg_path
         else:
-            fname = qtw.QFileDialog.getOpenFileName(self, "Select Config File", "", "Python File (*.py)")
+            fname = qtw.QFileDialog.getOpenFileName(self, "Select Config File", "mmsegmentation/configs/", "Python File (*.py)")
             if fname[0]:
                 self.cfg = fname[0]
             else:
                 self.cfg = ""
                 self.unlock_ui()
                 return
-        if os.path.exists(os.path.join(os.getcwd(),"model/pspnet_r50-d8_512x1024_40k_cityscapes_.pth")):
-            self.pth = "model/pspnet_r50-d8_512x1024_40k_cityscapes_.pth"
+        if os.path.exists(os.path.join(os.getcwd(),self.pth_path)):
+            self.pth = self.pth_path
         else:
-            fname = qtw.QFileDialog.getOpenFileName(self, "Select Weights", "", "PTH File (*.pth)")
+            fname = qtw.QFileDialog.getOpenFileName(self, "Select Weights", "mmsegmentation/work_dirs/sopia/", "PTH File (*.pth)")
             if fname[0]:
                 self.pth = fname[0]
             else:
-                self.mdl = ""
+                self.cfg = ""
                 self.pth = ""
                 self.unlock_ui()
                 return
         self.imageText.setText("Loading model...")
         print("Loading model...")
-        print(self.cfg)
-        print(self.pth)
         try:
             self.mdl = init_segmentor(self.cfg, self.pth, device='cuda:0')
             print("Loaded model.")
-        except AssertionError as e:
+        except Exception as e:
             if e == "Torch not compiled with CUDA enabled":
+                print("Attempting to load model without CUDA>")
                 try:
                     self.mdl = init_segmentor(self.cfg, self.pth)
                 except:
                     print("Unable to load model.")
-        except Exception as e:
-            print("Unable to load model.")
-            self.mdl = ""
-        finally:
-            self.unlock_ui()
-        return
+            else:
+                self.mdl = ""
+                print("Unable to load model.")
+        self.unlock_ui()
 
     def segment_image(self):
         self.lock_ui()

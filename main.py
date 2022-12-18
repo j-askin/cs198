@@ -216,17 +216,16 @@ class UI(qtw.QMainWindow):
         try:
             self.mdl = init_segmentor(self.cfg, self.pth, device='cuda:0')
             print("Loaded model.")
-        except AssertionError as e:
+        except Exception as e:
             if e == "Torch not compiled with CUDA enabled":
+                print("Attempting to load model without CUDA>")
                 try:
                     self.mdl = init_segmentor(self.cfg, self.pth)
                 except:
                     print("Unable to load model.")
-        except Exception as e:
-            print("Unable to load model.")
-            self.mdl = ""
-        finally:
-            self.unlock_ui()
+            else:
+                self.mdl = ""
+                print("Unable to load model.")
         self.unlock_ui()
 
 
