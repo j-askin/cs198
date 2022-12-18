@@ -213,7 +213,6 @@ class UI(qtw.QMainWindow):
                 return
         self.imageText.setText("Loading model...")
         print("Loading model...")
-        if True:
         try:
             self.mdl = init_segmentor(self.cfg, self.pth, device='cuda:0')
             print("Loaded model.")
