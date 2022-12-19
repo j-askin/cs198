@@ -354,7 +354,7 @@ class UI(qtw.QMainWindow):
             self.imageText.setText("No grid image found.")
             self.unlock_ui()
             return
-        cv_img = cv2.imread(self.img)
+        cv_img = cv2.imread(self.img if self.mode == 0 else self.segimg)
         cv_gridimg = cv2.imread(self.gridimg)
         print(cv_img)
         print(cv_gridimg.shape)
