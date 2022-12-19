@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1300</width>
-    <height>600</height>
+    <width>1280</width>
+    <height>654</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>1050</x>
       <y>10</y>
       <width>220</width>
-      <height>221</height>
+      <height>310</height>
      </rect>
     </property>
    </widget>
@@ -28,7 +28,7 @@
     <property name="geometry">
      <rect>
       <x>1050</x>
-      <y>240</y>
+      <y>330</y>
       <width>100</width>
       <height>30</height>
      </rect>
@@ -40,8 +40,8 @@
    <widget class="QPushButton" name="segmentImage">
     <property name="geometry">
      <rect>
-      <x>1170</x>
-      <y>280</y>
+      <x>1050</x>
+      <y>370</y>
       <width>100</width>
       <height>30</height>
      </rect>
@@ -53,8 +53,8 @@
    <widget class="QPushButton" name="getPoints">
     <property name="geometry">
      <rect>
-      <x>1050</x>
-      <y>280</y>
+      <x>930</x>
+      <y>550</y>
       <width>100</width>
       <height>30</height>
      </rect>
@@ -70,9 +70,9 @@
     <property name="geometry">
      <rect>
       <x>1049</x>
-      <y>310</y>
+      <y>400</y>
       <width>220</width>
-      <height>60</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -88,6 +88,115 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QGraphicsView" name="imageDisplay">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>1030</width>
+      <height>530</height>
+     </rect>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="loadModel">
+    <property name="geometry">
+     <rect>
+      <x>1170</x>
+      <y>330</y>
+      <width>100</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Load Model</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="createGrid">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>550</y>
+      <width>101</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Create Grid</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="hPositionSlider">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>570</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="vPositionSlider">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>570</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hPositionLabel">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>550</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Horizontal Position</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="vPositionLabel">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>550</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Vertical Position</string>
+    </property>
+   </widget>
    <widget class="QRadioButton" name="normImageRadio">
     <property name="enabled">
      <bool>false</bool>
@@ -95,9 +204,9 @@
     <property name="geometry">
      <rect>
       <x>1050</x>
-      <y>400</y>
-      <width>130</width>
-      <height>20</height>
+      <y>460</y>
+      <width>131</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
@@ -114,9 +223,9 @@
     <property name="geometry">
      <rect>
       <x>1050</x>
-      <y>420</y>
-      <width>80</width>
-      <height>20</height>
+      <y>480</y>
+      <width>131</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
@@ -132,10 +241,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>1150</x>
-      <y>400</y>
-      <width>110</width>
-      <height>20</height>
+      <x>1050</x>
+      <y>500</y>
+      <width>131</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
@@ -145,60 +254,41 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QGraphicsView" name="imageDisplay">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>1030</width>
-      <height>530</height>
-     </rect>
-    </property>
-    <property name="sizeAdjustPolicy">
-     <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="loadModel">
-    <property name="geometry">
-     <rect>
-      <x>1170</x>
-      <y>240</y>
-      <width>100</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Load Model</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="displayLabel">
-    <property name="geometry">
-     <rect>
-      <x>1050</x>
-      <y>380</y>
-      <width>80</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
+   <widget class="QPushButton" name="confirmGrid">
+    <property name="enabled">
      <bool>false</bool>
     </property>
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>550</y>
+      <width>101</width>
+      <height>28</height>
+     </rect>
+    </property>
     <property name="text">
-     <string>Displayed Image</string>
+     <string>Confirm Grid</string>
     </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
+   </widget>
+   <widget class="QCheckBox" name="changeMode">
+    <property name="geometry">
+     <rect>
+      <x>1180</x>
+      <y>480</y>
+      <width>70</width>
+      <height>17</height>
+     </rect>
     </property>
-    <property name="wordWrap">
-     <bool>true</bool>
+    <property name="text">
+     <string>Grid Mode</string>
     </property>
    </widget>
    <widget class="QPushButton" name="selectBorder">
     <property name="geometry">
      <rect>
       <x>1050</x>
-      <y>460</y>
-      <width>110</width>
+      <y>530</y>
+      <width>100</width>
       <height>30</height>
      </rect>
     </property>
@@ -210,8 +300,8 @@
     <property name="geometry">
      <rect>
       <x>1170</x>
-      <y>460</y>
-      <width>110</width>
+      <y>530</y>
+      <width>100</width>
       <height>30</height>
      </rect>
     </property>
@@ -223,7 +313,7 @@
     <property name="geometry">
      <rect>
       <x>1080</x>
-      <y>500</y>
+      <y>570</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -242,7 +332,7 @@
     <property name="geometry">
      <rect>
       <x>1200</x>
-      <y>500</y>
+      <y>570</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -257,32 +347,13 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QRadioButton" name="gridImageRadio_2">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>1150</x>
-      <y>420</y>
-      <width>80</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Grid / Border</string>
-    </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1300</width>
+     <width>1280</width>
      <height>21</height>
     </rect>
    </property>
