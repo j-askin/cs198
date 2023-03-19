@@ -1,13 +1,16 @@
 import PyQt5.QtWidgets as qtw
 from PyQt5 import uic
-import sys
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
+import sys, os
 from PIL import Image
 
 class Grid(qtw.QMainWindow):
     def __init__(self, parent):
         super(Grid, self).__init__(parent)
 
-        uic.loadUi("grid.ui", self)
+        ui_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "grid.ui"))
+        uic.loadUi(ui_path, self)
 
         self.notif = qtw.QMessageBox()
         self.submitSize.clicked.connect(self.create_grid)
@@ -40,49 +43,62 @@ class Grid(qtw.QMainWindow):
             else:
                 counter += 1
         img.putdata(actual_grid)
-        img.save("grid.png", "PNG")
+        img.save("overlay.png", "PNG")
+        gridimg = QPixmap("overlay.png")
+        temp = Image.open(self.parent().segimg).convert("RGB")
+        x, y = temp.size
+        segimg = QPixmap(self.parent().segimg)
+        self.parent().scene.clear()
+        self.parent().scene.addPixmap(segimg)
+        self.parent().gridLabel.setPixmap(gridimg)
+        self.parent().scene.addWidget(self.parent().gridLabel)
+        self.parent().hPositionSlider.setEnabled(True)
+        self.parent().vPositionSlider.setEnabled(True)
+        self.parent().hPositionLabel.show()
+        self.parent().hPositionSlider.show()
+        self.parent().vPositionLabel.show()
+        self.parent().vPositionSlider.show()
+        self.parent().confirmGrid.setEnabled(True)
+        self.parent().hPositionSlider.setMaximum(x)
+        self.parent().vPositionSlider.setMaximum(y)
         self.close()
 
     def error_handling(self, v_count, v_space, h_count, h_space):
-        if not (v_count and v_space and h_count and h_space):
-            err = self.show_error(0)
-            return err
-
         for i in v_count:
             if ord(i) < 48 or ord(i) > 57:
-                err = self.show_error(0)
+                err = self.show_error()
                 return err
         v_count = int(v_count)
 
         for i in v_space:
             if ord(i) < 48 or ord(i) > 57:
-                err = self.show_error(0)
+                err = self.show_error()
                 return err
         v_space = int(v_space)
 
         for i in h_count:
             if ord(i) < 48 or ord(i) > 57:
-                err = self.show_error(0)
+                err = self.show_error()
                 return err
         h_count = int(h_count)
 
         for i in h_space:
             if ord(i) < 48 or ord(i) > 57:
-                err = self.show_error(0)
+                err = self.show_error()
                 return err
         h_space = int(h_space)
 
         if not (v_count and v_space and h_count and h_space):
-            err = self.show_error(0)
+            err = self.show_error()
             return err
         
         return v_count, v_space, h_count, h_space
 
-    def show_error(self, x):
+    def show_error(self):
         self.notif.setIcon(qtw.QMessageBox.Critical)
-        self.notif.setText("All inputs must be greater than 0.")
+        self.notif.setText("All inputs must be a number greater than 0.")
         self.notif.setWindowTitle("Error")
-        self.notf.exec()
+        self.notif.exec()
 
         self.lineEdit.clear()
         self.lineEdit_2.clear()
