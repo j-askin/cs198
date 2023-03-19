@@ -326,7 +326,7 @@ class UI(qtw.QMainWindow):
             try:
                 result = inference_model(self.cls_mdl,img)
                 print(f"Result: {result['pred_class']}-{result['pred_label']}({result['pred_score']})")
-                return f"{result['pred_class']}-{result['pred_label']}({result['pred_score']})"
+                return result
             except:
                 pass
         return 
@@ -575,6 +575,7 @@ class UI(qtw.QMainWindow):
                 pt_rad = int(pt_rad*max((segimg_w/(xmax-xmin)),(segimg_l/(ymax-ymin))))
                 #Output all coordinates
                 coords = ""
+                class_count = []
                 blank_mask = np.zeros((pt_rad*2,pt_rad*2,3), np.uint8)
                 cv2.circle(blank_mask, (pt_rad,pt_rad),pt_rad,(255,255,255),thickness = -1)
                 coords += "Raw Coordinates:\n"
@@ -588,7 +589,20 @@ class UI(qtw.QMainWindow):
                         imagePath = os.path.join(raw_path,f"{os.path.split(self.img)[1].split('.')[0]}_({h},{v})_{h_lines[h]}_{v_lines[v]}_50.png")
                         print(imagePath)
                         cv2.imwrite(imagePath,temp)
-                        coords += f" - {self.classify_point(imagePath)}\n"
+                        result = self.classify_point(imagePath)
+                        if result is not None:
+                            coords += f"{result['pred_class']}-{result['pred_label']}({round(result['pred_score'],3)})"
+                            class_count.append(result['pred_class'])
+                        coords += "\n"
+
+                class_types = list(set(class_count))
+                class_types.sort()
+                for class_type in class_types:
+                    print(f"{class_type}: {round(class_count.count(class_type)*100/len(class_count),3)}%")
+                    coords += f"{class_type}: {round(class_count.count(class_type)*100/len(class_count),3)}%\n"
+
+
+
                 cv2.imwrite(os.path.join(savePath,"rawoutput.png"),cv_segimg)
                 file = open(f"{savePath}/rawcoordinates.txt", "w+")
                 file.write(coords)
