@@ -1,0 +1,54 @@
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>SOPIA 1 - v0.63</title>
+		<meta name="description" content="sopia project">
+		<meta name="author" content="miguel martinez">
+		<link rel="stylesheet" type="text/css" href="styles.css">
+	
+		<style>
+			body {background: #E5E5E5; }
+		</style>
+	</head>
+
+	<body>
+		<div class="main_window">
+			{%if image %}
+				<img src= {{image}} class="image_display"}></div>
+			{% else %}
+				<img src="images/test_grid_1.png" class="image_display"></div>
+			{% endif %}
+
+				<span  class="image_text">image_text</span>
+
+			{%if output_display %}
+				<span  class="output_display">{{output_display}}</span>
+			{% else %}
+				<span  class="output_display">output_display</span>
+			{% endif %}
+			
+			<form action="/load_image/" method="post">
+				<button type="button"  class="load_image">load_image</button>
+			</form>
+
+
+			<button type="button"  class="load_segmented_image">load_segmented_image</button>
+			<button type="button"  class="load_grid">load_grid</button>
+			<button type="button"  class="create_grid">create_grid</button>
+			<button type="button"  class="load_segmenter">load_segmenter</button>
+			<button type="button"  class="segment_image">segment_image</button>
+			<button type="button"  class="load_classifier">load_classifier</button>
+			<button type="button"  class="classify_image">classify_image</button>
+			<button type="button"  class="get_points">get_points</button>
+			<button type="button"  class="clear_images">clear_images</button>
+			<span  class="image_label">image_label</span>
+			<span  class="grid_image_label">grid_image_label</span>
+			<span  class="segmented_image_label">segmented_image_label</span>
+			<input type="radio" id="image_radio" name="image_shown",value="img" class="image_radio"></input>
+			<input type="radio" id="grid_image_radio" name="image_shown",value="grid"   class="grid_image_radio"></input>
+			<input type="radio" id="segmented_image_radio" name="image_shown",value="seg"   class="segmented_image_radio"></input>
+			<span  class="image_details">image_details</span>
+			<span  class="grid_details">grid_details</span>
+		</div>
+	</body>
+</html>
