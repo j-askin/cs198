@@ -3,21 +3,9 @@ from PIL import Image
 import numpy as np
 from tkinter import filedialog
 import mmcv
-from mmseg.apis import init_segmentor, inference_segmentor, train_segmentor
-from mmseg.apis import show_result_pyplot
+from mmseg.apis import init_segmentor, inference_segmentor, show_result_pyplot, train_segmentor
 
-'''
-#obsolete import, do not use
-from mmcls.apis import init_model, inference_model, train_model
-from mmcls.apis import show_result_pyplot as show_cls_result_pyplot
-'''
-
-def load_images(img_path = "",grid_path = "", seg_path = ""):
-    if not os.path.exists(os.path.join(os.path.dirname(__file__),"data")):
-        os.mkdir(os.path.join(os.path.dirname(__file__),"data"))
-    return load_img(img_path), load_grid(grid_path), load_seg(seg_path)
-
-def load_img(img_path=""):
+def load_image(img_path=""):
     img = ""
     if not os.path.exists(os.path.join(os.path.dirname(__file__),"data")):
         os.mkdir(os.path.join(os.path.dirname(__file__),"data"))
@@ -59,10 +47,7 @@ def load_seg(seg_path=""):
     print(f"Loaded segmented image {seg_img}")
     return seg_img
 
-def clear_load():
-    return "", "", ""
-
-def load_seg_model(seg_cfg_path = "",seg_pth_path = "",seg_lbl_path = ""):
+def load_model(seg_cfg_path = "",seg_pth_path = ""):
     seg_cfg, seg_pth, seg_mdl = "", "", ""
     if not os.path.exists(os.path.join(os.path.dirname(__file__),"data")):
         os.mkdir(os.path.join(os.path.dirname(__file__),"data"))
@@ -76,11 +61,6 @@ def load_seg_model(seg_cfg_path = "",seg_pth_path = "",seg_lbl_path = ""):
         seg_pth = os.path.join(os.path.dirname(__file__),seg_pth_path)
     else:
         seg_pth = filedialog.askopenfilename(title="Select Segmenter Path",initialdir=os.path.join(os.path.dirname(__file__),"data"),filetypes=[("Segmenter path file", "*.pth")])
-    print(f"Attempting to load segmenter label {os.path.join(os.path.dirname(__file__),seg_lbl_path)}")
-    if os.path.isfile(os.path.join(os.path.dirname(__file__),seg_lbl_path)):
-        seg_lbl = os.path.join(os.path.dirname(__file__),seg_lbl_path)
-    else:
-        seg_lbl = filedialog.askopenfilename(title="Select Segmenter Path",initialdir=os.path.join(os.path.dirname(__file__),"data"),filetypes=[("Segmenter label file", "*.json")])
     if seg_cfg != "" and seg_pth != "":
         print("Loading segmentation model...")
         try:
@@ -96,51 +76,10 @@ def load_seg_model(seg_cfg_path = "",seg_pth_path = "",seg_lbl_path = ""):
         except Exception as e:
             print(f"Unable to load model: {e}")
     
-    return seg_cfg,seg_pth,seg_lbl,seg_mdl
+    return seg_cfg,seg_pth,seg_mdl
 
-#obsolete function, do not use
-'''
-def load_cls_model(cls_cfg_path = "",cls_pth_path = ""):
-    cls_cfg, cls_pth, cls_mdl = "", "", ""
-    if not os.path.exists(os.path.join(os.path.dirname(__file__),"data")):
-        os.mkdir(os.path.join(os.path.dirname(__file__),"data"))
-    print(f"Attempting to load classifier config {os.path.join(os.path.dirname(__file__),cls_cfg_path)}")
-    if os.path.exists(os.path.join(os.path.dirname(__file__),cls_cfg_path)):
-        cls_cfg = os.path.join(os.path.dirname(__file__),cls_cfg_path)
-    else:
-        cls_cfg = filedialog.askopenfilename(title="Select Classifier Config",initialdir=os.path.join(os.path.dirname(__file__),"data"),filetypes=[("Classifier config file", "*.py")])
-    print(f"Attempting to load segmenter path {os.path.join(os.path.dirname(__file__),cls_pth_path)}")
-    if os.path.isfile(os.path.join(os.path.dirname(__file__),cls_pth_path)):
-        cls_pth = os.path.join(os.path.dirname(__file__),cls_pth_path)
-    else:
-        cls_pth = filedialog.askopenfilename(title="Select Classfier Path",initialdir=os.path.join(os.path.dirname(__file__),"data"),filetypes=[("Classifier path file", "*.pth")])
-    if cls_cfg != "" and cls_pth != "":
-        print("Loading classification model...")
-        try:
-            cls_mdl = init_model(cls_cfg, cls_pth, device='cuda:0')
-            print("Loaded classification model to gpu.")
-        except AssertionError as e:
-            if e:
-                try:
-                    cls_mdl = init_model(cls_cfg, cls_pth, device='cpu')
-                    print("Loaded classification model to cpu.")
-                except:
-                    print(f"Unable to load model: {e}")
-        except Exception as e:
-                print(f"Unable to load model: {e}")
-    return cls_cfg,cls_pth,cls_mdl
-'''
-
-def segment_image(img = "", seg_mdl = ""):
+def segment_image(img = "", seg_mdl = "", out_path = "", show=False):
     #Replace hard coded classes pallete with result from labels json file
-
-    classes = ("Background", "Chalcopyrite", "Galena", "Magnetite", "Bornite", "Pyrrhotite",
-               "Pyrite/Marcasite", "Pentlandite", "Sphalerite", "Arsenopyrite", "Hematite", 
-               "Tenantite-tetrahydrite", "Covelline")
-
-    palette = [[0, 0, 0], [255, 0, 0], [203, 255, 0], [0, 255, 102], [0, 101, 255],
-               [204, 0, 255], [255, 76, 76], [219, 255, 76], [76, 255, 147],
-               [76, 147, 255], [219, 76, 255], [255, 153, 153], [234, 255, 153]]
     seg_img = ""
     if img == "":
         print("Please load an image first.")
@@ -150,41 +89,15 @@ def segment_image(img = "", seg_mdl = ""):
         print(f"Segmenting image {img}...")
         try:
             result = inference_segmentor(seg_mdl,img)
-            out_path = img[:-4]+"_seg.png"
-            show_result_pyplot(seg_mdl, img, result, palette=palette, opacity=1, out_file=out_path)
+            if out_path == "":
+                out_path = img[:-4]+"_seg.png"
+            if show:
+                show_result_pyplot(seg_mdl, img, result, opacity=1, out_file=out_path)
             seg_img = out_path
             print(f"Segmented image generated to {out_path}.")
         except Exception as e:
             print("Unable to segment image: {e}")
     return seg_img
-
-#obsolete function, do not use
-'''
-def classify_image(img = "", cls_mdl = ""):
-    result = {"pred_class":"","pred_label":"","pred_score":0}
-    if img == "":
-        print("Please load an image first.")
-    elif cls_mdl in ["",None]:
-        print("Please load a model first.")
-    else:
-        print(f"Classifying image {img}...")
-        try:
-            result = inference_model(cls_mdl,img)
-            print(f"Result: {result['pred_class']}-{result['pred_label']}({result['pred_score']})")
-        except Exception as e:
-            print("Unable to classify image: {e}")
-    return result
-'''
-
-def classify_point(color = (0,0,0), classifier = []):
-    result = "unknown material"
-    print(classifier)
-    print(color)
-    for material in classifier:
-        if tuple(material[1]) == tuple(color):
-            return material[0]
-    return result
-
 
 def create_grid(out_path = "grid.png", v_count = 10,v_space = 200,h_count = 10,h_space = 200,x_size = 3396, x_off = 100, y_size = 2547, y_off = 100):
     grid_height = v_count + (v_count * v_space) - v_space
@@ -209,10 +122,17 @@ def create_grid(out_path = "grid.png", v_count = 10,v_space = 200,h_count = 10,h
     print(f"Saved grid to {out_path}")
     return os.path.join(os.path.dirname(__file__),out_path)
 
-def get_points(img="",grid_img="",seg_img="",pt_rad=25):
-    #set boundaries for grid color in HSV format
-    grid_colorl = (0,0,0) #grid color in RGB
-    grid_coloru = (255,255,255) #grid color in RGB
+def classify_point(color = (0,0,0),seg_mdl=""):
+    if seg_mdl in ["",None]:
+        return ""
+    else:
+        materials = list(zip(seg_mdl.CLASSES,seg_mdl.PALETTE))
+        for material in materials:
+            if tuple(color) == tuple(material[1]):
+                return material[0]
+        return "UNKNOWN MATERIAL"
+
+def get_points(img="",grid_img="",seg_img="",seg_mdl="",pt_rad=25):
     pt_mode = False
     #generate output directory
     #savePath = os.path.join(os.path.expanduser("~"),f"Desktop/SoPIA/cs198/save/{time.strftime('%m%y%d-%H%M%S',time.localtime(time.time()))}")
@@ -273,16 +193,6 @@ def get_points(img="",grid_img="",seg_img="",pt_rad=25):
     h_lines.sort()
     v_lines.sort()
 
-    classes = ("Background", "Chalcopyrite", "Galena", "Magnetite", "Bornite", "Pyrrhotite",
-               "Pyrite/Marcasite", "Pentlandite", "Sphalerite", "Arsenopyrite", "Hematite", 
-               "Tenantite-tetrahydrite", "Covelline")
-
-    palette = [[0, 0, 0], [255, 0, 0], [203, 255, 0], [0, 255, 102], [0, 101, 255],
-               [204, 0, 255], [255, 76, 76], [219, 255, 76], [76, 255, 147],
-               [76, 147, 255], [219, 76, 255], [255, 153, 153], [234, 255, 153]]
-    
-    classifier = list(zip(classes,palette))
-
     #Output all coordinates
     coords = ""
     seg_coords = ""
@@ -306,17 +216,10 @@ def get_points(img="",grid_img="",seg_img="",pt_rad=25):
                 seg_point = cv2.cvtColor(cv_seg_img[r3:r4,r1:r2], cv2.COLOR_BGR2BGRA)
                 seg_point[:,:,3] = blank_mask[:,:,0]
                 cv2.imwrite(os.path.join(pt_seg_path,f"{os.path.split(img)[1].split('.')[0]}_({h},{v})_{h_lines[h]}_{v_lines[v]}_50.png"),seg_point)
-                result = classify_point(color,classifier)
+                result = classify_point(color,seg_mdl)
                 seg_coords += f" - {result}\n"
                 class_count.append(result)
-                '''
-                #Uses mmclassification, obsolete
-                result = classify_image(os.path.join(pt_path,f"{os.path.split(img)[1].split('.')[0]}_({h},{v})_{h_lines[h]}_{v_lines[v]}_50.png"),cls_mdl)
-                if result["pred_class"] != "":
-                    seg_coords += f"{result['pred_class']}-{result['pred_label']}({round(result['pred_score'],3)})"
-                    class_count.append(result['pred_class'])
-                seg_coords += "\n"
-                '''
+
 
     cv2.imwrite(os.path.join(savePath,"lines.png"),cv_gsgrid_img)
     cv2.imwrite(os.path.join(savePath,"grid_lines.png"),cv_grid_img)
