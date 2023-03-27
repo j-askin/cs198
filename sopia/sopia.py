@@ -4,9 +4,13 @@ import numpy as np
 from tkinter import filedialog
 import mmcv
 from mmseg.apis import init_segmentor, inference_segmentor, train_segmentor
-from mmseg.apis import show_result_pyplot as show_seg_result_pyplot
+from mmseg.apis import show_result_pyplot
+
+'''
+#obsolete import, do not use
 from mmcls.apis import init_model, inference_model, train_model
 from mmcls.apis import show_result_pyplot as show_cls_result_pyplot
+'''
 
 def load_images(img_path = "",grid_path = "", seg_path = ""):
     if not os.path.exists(os.path.join(os.path.dirname(__file__),"data")):
@@ -94,6 +98,8 @@ def load_seg_model(seg_cfg_path = "",seg_pth_path = "",seg_lbl_path = ""):
     
     return seg_cfg,seg_pth,seg_lbl,seg_mdl
 
+#obsolete function, do not use
+'''
 def load_cls_model(cls_cfg_path = "",cls_pth_path = ""):
     cls_cfg, cls_pth, cls_mdl = "", "", ""
     if not os.path.exists(os.path.join(os.path.dirname(__file__),"data")):
@@ -123,8 +129,18 @@ def load_cls_model(cls_cfg_path = "",cls_pth_path = ""):
         except Exception as e:
                 print(f"Unable to load model: {e}")
     return cls_cfg,cls_pth,cls_mdl
+'''
 
 def segment_image(img = "", seg_mdl = ""):
+    #Replace hard coded classes pallete with result from labels json file
+
+    classes = ("Background", "Chalcopyrite", "Galena", "Magnetite", "Bornite", "Pyrrhotite",
+               "Pyrite/Marcasite", "Pentlandite", "Sphalerite", "Arsenopyrite", "Hematite", 
+               "Tenantite-tetrahydrite", "Covelline")
+
+    palette = [[0, 0, 0], [255, 0, 0], [203, 255, 0], [0, 255, 102], [0, 101, 255],
+               [204, 0, 255], [255, 76, 76], [219, 255, 76], [76, 255, 147],
+               [76, 147, 255], [219, 76, 255], [255, 153, 153], [234, 255, 153]]
     seg_img = ""
     if img == "":
         print("Please load an image first.")
@@ -134,14 +150,16 @@ def segment_image(img = "", seg_mdl = ""):
         print(f"Segmenting image {img}...")
         try:
             result = inference_segmentor(seg_mdl,img)
-            out_path = img[:-4]+"_seg"+img[-4:]
-            show_seg_result_pyplot(seg_mdl, img, result, out_file=out_path)
+            out_path = img[:-4]+"_seg.png"
+            show_result_pyplot(seg_mdl, img, result, palette=palette, opacity=1, out_file=out_path)
             seg_img = out_path
             print(f"Segmented image generated to {out_path}.")
         except Exception as e:
             print("Unable to segment image: {e}")
     return seg_img
 
+#obsolete function, do not use
+'''
 def classify_image(img = "", cls_mdl = ""):
     result = {"pred_class":"","pred_label":"","pred_score":0}
     if img == "":
@@ -155,6 +173,16 @@ def classify_image(img = "", cls_mdl = ""):
             print(f"Result: {result['pred_class']}-{result['pred_label']}({result['pred_score']})")
         except Exception as e:
             print("Unable to classify image: {e}")
+    return result
+'''
+
+def classify_point(color = (0,0,0), classifier = []):
+    result = "unknown material"
+    print(classifier)
+    print(color)
+    for material in classifier:
+        if tuple(material[1]) == tuple(color):
+            return material[0]
     return result
 
 
@@ -181,7 +209,7 @@ def create_grid(out_path = "grid.png", v_count = 10,v_space = 200,h_count = 10,h
     print(f"Saved grid to {out_path}")
     return os.path.join(os.path.dirname(__file__),out_path)
 
-def get_points(img="",grid_img="",seg_img="",pt_rad=25,cls_mdl=""):
+def get_points(img="",grid_img="",seg_img="",pt_rad=25):
     #set boundaries for grid color in HSV format
     grid_colorl = (0,0,0) #grid color in RGB
     grid_coloru = (255,255,255) #grid color in RGB
@@ -245,6 +273,16 @@ def get_points(img="",grid_img="",seg_img="",pt_rad=25,cls_mdl=""):
     h_lines.sort()
     v_lines.sort()
 
+    classes = ("Background", "Chalcopyrite", "Galena", "Magnetite", "Bornite", "Pyrrhotite",
+               "Pyrite/Marcasite", "Pentlandite", "Sphalerite", "Arsenopyrite", "Hematite", 
+               "Tenantite-tetrahydrite", "Covelline")
+
+    palette = [[0, 0, 0], [255, 0, 0], [203, 255, 0], [0, 255, 102], [0, 101, 255],
+               [204, 0, 255], [255, 76, 76], [219, 255, 76], [76, 255, 147],
+               [76, 147, 255], [219, 76, 255], [255, 153, 153], [234, 255, 153]]
+    
+    classifier = list(zip(classes,palette))
+
     #Output all coordinates
     coords = ""
     seg_coords = ""
@@ -260,17 +298,26 @@ def get_points(img="",grid_img="",seg_img="",pt_rad=25,cls_mdl=""):
             coords += f"({h}, {v})  ({h_lines[h]}, {v_lines[v]})\n"
             img_point = cv2.cvtColor(cv_img[r3:r4,r1:r2], cv2.COLOR_BGR2BGRA)
             img_point[:,:,3] = blank_mask[:,:,0]
-            cv2.imwrite(os.path.join(pt_seg_path,f"{os.path.split(img)[1].split('.')[0]}_({h},{v})_{h_lines[h]}_{v_lines[v]}_50.png"),img_point)
+            cv2.imwrite(os.path.join(pt_path,f"{os.path.split(img)[1].split('.')[0]}_({h},{v})_{h_lines[h]}_{v_lines[v]}_50.png"),img_point)
             if pt_mode:
-                seg_coords += f"({h}, {v})  ({h_lines[h]}, {v_lines[v]})"
+                color = cv_seg_img[v_lines[v],h_lines[h]][::-1]
+                print(color)
+                seg_coords += f"({h}, {v})  ({h_lines[h]}, {v_lines[v]}) ({color})"
                 seg_point = cv2.cvtColor(cv_seg_img[r3:r4,r1:r2], cv2.COLOR_BGR2BGRA)
                 seg_point[:,:,3] = blank_mask[:,:,0]
-                cv2.imwrite(os.path.join(pt_path,f"{os.path.split(img)[1].split('.')[0]}_({h},{v})_{h_lines[h]}_{v_lines[v]}_50.png"),seg_point)
+                cv2.imwrite(os.path.join(pt_seg_path,f"{os.path.split(img)[1].split('.')[0]}_({h},{v})_{h_lines[h]}_{v_lines[v]}_50.png"),seg_point)
+                result = classify_point(color,classifier)
+                seg_coords += f" - {result}\n"
+                class_count.append(result)
+                '''
+                #Uses mmclassification, obsolete
                 result = classify_image(os.path.join(pt_path,f"{os.path.split(img)[1].split('.')[0]}_({h},{v})_{h_lines[h]}_{v_lines[v]}_50.png"),cls_mdl)
                 if result["pred_class"] != "":
                     seg_coords += f"{result['pred_class']}-{result['pred_label']}({round(result['pred_score'],3)})"
                     class_count.append(result['pred_class'])
                 seg_coords += "\n"
+                '''
+
     cv2.imwrite(os.path.join(savePath,"lines.png"),cv_gsgrid_img)
     cv2.imwrite(os.path.join(savePath,"grid_lines.png"),cv_grid_img)
     cv2.imwrite(os.path.join(savePath,"image_output.png"),cv_img)
