@@ -2,80 +2,109 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>SOPIA 1 - v0.64</title>
+		<title>SOPIA 1 - v0.67</title>
 		<meta name="description" content="sopia project">
 		<meta name="author" content="miguel martinez">
-		<link rel="stylesheet" type="text/css" href={{url_for('static', filename='styles.css')}}>
-	
+		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}">
+		<script src="{{url_for('static', filename='scripts.js')}}"></script>
 		<style>
 			body {background: #E5E5E5;}
 		</style>
 	</head>
 
 	<body>
-		<div class="main_window">
-			<img src={{url_for('static', filename="data/test.jpg")}} class="image_display"></div>
-			<img src={{url_for('static', filename="data/test_grid.png")}} class="grid_display"></div>
-			<img src={{url_for('static', filename="data/test_seg.png")}} class="seg_display"></div>
-			<span  class="points_display">Points Display</span>
-			<span  class="output_display">Output Display</span>
+		<div class="main_window" id="main_window">
+			<div class="image_window" id="image_window">
+			<div class="image_board" id="image_board">
+				<img src="{{url_for('static', filename=data.img)}}" id="image_display" class="image_display" alt ="sample image layer"></img>
+				<img src="{{url_for('static', filename=data.grid_img)}}" id="grid_display" class="grid_display" alt="grid image layer"></img>
+				<img src="{{url_for('static', filename=data.mask_img)}}" id="mask_display" class="mask_display" alt="segmented mask layer"></img>
+			</div>
+			</div>
 
-			<form action={{url_for('sopia_action')}} method="post">
-				<button type="submit" name="action", value="load_image" class="load_image">Load Image</button>
-				<button type="submit" name="action", value="load_mask" class="load_mask">Load Segmented Mask</button>
-				<button type="submit" name="action", value="load_grid" class="load_grid">Load Grid</button>
+			<label id="points_display" class="points_display" disabled=true>{{data.point_text}}</label>
+			<label id="output_display" class="output_display" disabled=true>{{data.output_text}}</label>
+
+			<form id="form_action" class="form_action" action="{{url_for('sopia_action')}}" method="post" enctype="multipart/form-data">
+				<input type="file" id="upload_image" class="upload_image" name="image_file" accept="image/*">
+				<button type="submit" name="action", value="load_image" class="load_image">Create Grid</button>
+				<input type="file" id="upload_model" class="upload_model" name="model_file" accept=".pth,.py">
+				<button type="submit" name="action", value="load_model" class="load_model">Create Grid</button>
+
+				<select id="select_image" class="select_image" name="action">
+					{% for mdl_ind in data.mdl_list %}
+						<option value="{{mdl_ind}}">{{mdl_ind}}</option>
+					{% endfor %}
+					</select>
+
+				<select id="select_grid" class="select_grid" name="action">
+					{% for mdl_ind in data.mdl_list %}
+						<option value="{{mdl_ind}}">{{mdl_ind}}</option>
+					{% endfor %}
+					</select>
+
+				<select id="select_mask" class="select_mask" name="action">
+					{% for mdl_ind in data.mdl_list %}
+						<option value="{{mdl_ind}}">{{mdl_ind}}</option>
+					{% endfor %}
+					</select>
+
+				<select id="select_model" class="select_model" name="action">
+					{% for mdl_ind in data.mdl_list %}
+						<option value="{{mdl_ind}}">{{mdl_ind}}</option>
+					{% endfor %}
+					</select>
+
 				<button type="submit" name="action", value="create_grid" class="create_grid">Create Grid</button>
-				<button type="submit" name="action", value="load_model" class="load_model">Load Segmenter Model</button>
 				<button type="submit" name="action", value="create_mask" class="create_mask">Segment Image</button>
 				<button type="submit" name="action", value="get_points" class="get_points">Get Grid Points</button>
 				<button type="submit" name="action", value="clear_data" class="clear_data">Clear Data</button>
 
-				<label for "image_path" class="image_path_label">Image</label>
-				<input type="text" id="image_path" name="image_path" class="image_path" size=40></input>
-
-				<label for "seg_path" class="seg_path_label">Segmented Image</label>
-				<input type="text" id="seg_path" name="seg_path" class="seg_path" size=40></input>
-
-				<label for "grid_path" class="grid_path_label">Grid</label>
-				<input type="text" id="grid_path" name="grid_path" class="grid_path" size=40></input>
-
-				<label for "seg_cfg_path" class="seg_cfg_label">Segmenter Config</label>
-				<input type="text" id="seg_cfg_path" name="seg_cfg_path" class="seg_cfg_path" size=40></input>
-
-				<label for "seg_pth_path" class="seg_pth_label">Segmenter Path</label>
-				<input type="text" id="seg_pth_path" name="seg_pth_path" class="seg_pth_path" size=40></input>
-
-				<label for "pt_rad" class="pt_rad_label">Point Radius</label>
+				<label for="pt_rad" class="pt_rad_label">Point Radius</label>
 				<input type="text" id="pt_rad" name="pt_rad" class="pt_rad" size=40></input>
 
-				<label for "v_count" class="v_count_label">Rows</label>
-				<input type="text" id="v_count" name="v_count" class="v_count" size=5></input>
-				<label for "h_count" class="h_count_label">Columns</label>
-				<input type="text" id="h_count" name="h_count" class="h_count" size=5></input>
+				<label for="row_count" class="row_count_label">Grid Rows</label>
+				<input type="text" id="row_count" name="row_count" class="row_count" size=5></input>
 
-				<label for "v_space" class="v_space_label">Row Space</label>
-				<input type="text" id="v_space" name="v_space" class="v_space" size=5></input>
-				<label for "h_space" class="h_space_label">Column Space</label>
-				<input type="text" id="h_space" name="h_space" class="h_space" size=5></input>
+				<label for="col_count" class="col_count_label">Grid Columns</label>
+				<input type="text" id="col_count" name="col_count" class="col_count" size=5></input>
 
-				<label for "x_size" class="x_size_label">Width</label>
-				<input type="text" id="x_size" name="x_size" class="x_size" size=5></input>
-				<label for "y_size" class="y_size_label">Columns</label>
-				<input type="text" id="y_size" name="y_size" class="y_size" size=5></input>
-				<label for "x_off" class="x_off_label">X-offset</label>
-				<input type="text" id="x_off" name="x_off" class="x_off" size=5></input>
-				<label for "y_off" class="y_off_label">Y-offset</label>
-				<input type="text" id="y_off" name="y_off" class="y_off" size=5></input>
-				
-				<label for "image_radio" class="image_radio_label">Sample Image</label>
-				<input type="radio" id="image_radio" name="image_shown",value="img" class="image_radio"></input>
-				<label for "grid_radio" class="grid_radio_label">Grid Mask</label>
-				<input type="radio" id="grid_radio" name="image_shown",value="grid" class="grid_radio"></input>
-				<label for "seg_radio" class="seg_radio_label">Segmented Mask</label>
-				<input type="radio" id="seg_radio" name="image_shown",value="seg" class="seg_radio"></input>
+				<label for="row_space" class="row_space_label">Grid Row Space</label>
+				<input type="text" id="row_space" name="row_space" class="row_space" size=5></input>
 
+				<label for="col_space" class="col_space_label">Grid Column Space</label>
+				<input type="text" id="col_space" name="col_space" class="col_space" size=5></input>
+
+				<label for="grid_w" class="grid_w_label">Grid Width</label>
+				<input type="text" id="grid_w" name="grid_w" class="grid_w" size=5></input>
+
+				<label for="grid_l" class="grid_l_label">Grid Height</label>
+				<input type="text" id="grid_l" name="grid_l" class="grid_l" size=5></input>
+
+				<label for="grid_x" class="grid_x_label">Grid X-offset</label>
+				<input type="text" id="grid_x" name="grid_x" class="grid_x" size=5></input>
+
+				<label for="grid_y" class="grid_y_label">Grid Y-offset</label>
+				<input type="text" id="grid_y" name="grid_y" class="grid_y" size=5></input>
 		</form>
+
+		<label for="image_check" class="image_check_label">Sample Image</label>
+		<input type="checkbox" id="image_check" class="image_check" value="image_display" style="display:none"></input>
+
+		<label for="grid_check" class="grid_check_label">Grid Mask</label>
+		<input type="checkbox" id="grid_check" class="grid_check" value="grid_display" style="display:none"></input>
+
+		<label for="mask_check" class="mask_check_label">Segmented Mask</label>
+		<input type="checkbox" id="mask_check" class="mask_check" value="mask_display" style="display:none"></input>
+
+		<label for="zoom_slider" class="zoom_slider_label">Zoom Level</label>
+		<input type="range" id="zoom_slider" class="zoom_slider" name="zoom_offset" min=1 max=10 value=1 style="display:none">
+
+		<label for="x_slider" class="x_slider_label">X Offset</label>
+		<input type="range" id="x_slider" class="x_slider" name="zoom_offset" min=0 max=10 value=0 style="display:none">
 
 		</div>
 	</body>
 </html>
+
+
