@@ -15,94 +15,149 @@
 	<body>
 		<div class="main_window" id="main_window">
 			<div class="image_window" id="image_window">
-			<div class="image_board" id="image_board">
-				<img src="{{url_for('static', filename=data.img)}}" id="image_display" class="image_display" alt ="sample image layer"></img>
-				<img src="{{url_for('static', filename=data.grid_img)}}" id="grid_display" class="grid_display" alt="grid image layer"></img>
-				<img src="{{url_for('static', filename=data.mask_img)}}" id="mask_display" class="mask_display" alt="segmented mask layer"></img>
+				<div class="image_board" id="image_board">
+					<img src="{{url_for('static', filename=data.img)}}" id="image_display" class="image_display" alt ="sample image layer"></img>
+					<img src="{{url_for('static', filename=data.grid_img)}}" id="grid_display" class="grid_display" alt="grid image layer"></img>
+					<img src="{{url_for('static', filename=data.mask_img)}}" id="mask_display" class="mask_display" alt="segmented mask layer"></img>
+				</div>
 			</div>
+
+			<div class="options_window" id="options_window">
+				<form id="form_action" class="form_action" action="{{url_for('sopia_action')}}" method="post" enctype="multipart/form-data">
+					<div class="element">
+						<label for="select_image" class="label">Select Image</label>
+						<select id="select_image" class="select" name="image">
+							{% for image_index in range(data.image_count) %}
+								<option value="{{data.image_list[image_index]}}" {% if image_index == data.image_idx %} selected {% endif %} class="option">{{data.image_list[image_index]}}</option>
+							{% endfor %}
+						</select>
+						<button type="submit" name="action", value="update_image" class="button">Update Image</button>
+					</div>
+
+					<div class="element">
+						<label for="select_model" class="label">Select Model</label>
+						<select id="select_model" class="select" name="model">
+							{% for model_index in range(data.model_count) %}
+								<option value="{{data.model_list[model_index]}}" {% if model_index == data.model_idx %} selected {% endif %} class="option">{{data.model_list[model_index]}}</option>
+							{% endfor %}
+						</select>
+						<button type="submit" name="action", value="update_model" class="button">Update Model</button>
+					</div>
+
+					<div class="element">
+						<button type="submit" name="action", value="create_grid" class="button">Create Grid</button>
+						<button type="submit" name="action", value="create_mask" class="button">Segment Image</button>
+					</div>
+
+					<div class="element">
+						<label for="pt_rad" class="label">Point Radius</label>
+						<input type="text" id="pt_rad" name="pt_rad" class="textinput" size=40></input>
+					</div>
+
+					<div class="element">
+						<button type="submit" name="action", value="get_points" class="button">Get Grid Points</button>
+						<button type="submit" name="action", value="clear_data" class="button">Clear Data</button>
+					</div>
+
+					<div class="element">
+						<label for="row_count" class="label">Grid Rows</label>
+						<input type="text" id="row_count" name="row_count" class="textinput" size=5></input>
+					</div>
+
+					<div class="element">
+						<label for="col_count" class="label">Grid Columns</label>
+						<input type="text" id="col_count" name="col_count" class="textinput" size=5></input>
+					</div>
+					
+					<div class="element">
+						<label for="row_space" class="label">Grid Row Space</label>
+						<input type="text" id="row_space" name="row_space" class="textinput" size=5></input>
+					</div>
+
+					<div class="element">
+						<label for="col_space" class="label">Grid Column Space</label>
+						<input type="text" id="col_space" name="col_space" class="textinput" size=5></input>
+					</div>
+
+					<div class="element">
+						<label for="grid_w" class="label">Grid Width</label>
+						<input type="text" id="grid_w" name="grid_w" class="textinput" size=5></input>
+					</div>
+
+					<div class="element">
+						<label for="grid_l" class="label">Grid Height</label>
+						<input type="text" id="grid_l" name="grid_l" class="textinput" size=5></input>
+					</div>
+
+					<div class="element">
+						<label for="grid_x" class="label">Grid X-offset</label>
+						<input type="text" id="grid_x" name="grid_x" class="textinput" size=5></input>
+					</div>
+
+					<div class="element">
+						<label for="grid_y" class="label">Grid Y-offset</label>
+						<input type="text" id="grid_y" name="grid_y" class="textinput" size=5></input>
+					</div>
+				</form>
+				<div class="element">
+					<label for="image_check" class="label">Sample Image</label>
+					<input type="checkbox" id="image_check" class="check" value="image_display" style="display:none"></input>
+				</div>
+
+				<div class="element">
+					<label for="grid_check" class="label">Grid Mask</label>
+					<input type="checkbox" id="grid_check" class="check" value="grid_display" style="display:none"></input>
+				</div>
+
+				<div class="element">
+					<label for="mask_check" class="label">Segmented Mask</label>
+					<input type="checkbox" id="mask_check" class="check" value="mask_display" style="display:none"></input>
+				</div>
+
+				<div class="element">
+					<label for="zoom_slider" class="label">Zoom Level</label>
+					<input type="range" id="zoom_slider" class="slider" name="zoom_offset" min=1 max=10 value=1 style="display:none">
+				</div>
+
+				<div class="element">
+					<label for="x_slider" class="label">X Offset</label>
+					<input type="range" id="x_slider" class="slider" name="zoom_offset" min=0 max=10 value=0 style="display:none">
+				</div>
+
+				<div class="element">
+					<label for="y_slider" class="label">Y Offset</label>
+					<input type="range" id="y_slider" class="slider" name="zoom_offset" min=0 max=10 value=0 style="display:none">
+				</div>
 			</div>
 
-			<label id="points_display" class="points_display" disabled=true>{{data.point_text}}</label>
-			<label id="output_display" class="output_display" disabled=true>{{data.output_text}}</label>
-
-			<form id="form_action" class="form_action" action="{{url_for('sopia_action')}}" method="post" enctype="multipart/form-data">
-				<input type="file" id="upload_image" class="upload_image" name="image_file" accept="image/*">
-				<button type="submit" name="action", value="load_image" class="load_image">Create Grid</button>
-				<input type="file" id="upload_model" class="upload_model" name="model_file" accept=".pth,.py">
-				<button type="submit" name="action", value="load_model" class="load_model">Create Grid</button>
-
-				<select id="select_image" class="select_image" name="action">
-					{% for mdl_ind in data.mdl_list %}
-						<option value="{{mdl_ind}}">{{mdl_ind}}</option>
-					{% endfor %}
-					</select>
-
-				<select id="select_grid" class="select_grid" name="action">
-					{% for mdl_ind in data.mdl_list %}
-						<option value="{{mdl_ind}}">{{mdl_ind}}</option>
-					{% endfor %}
-					</select>
-
-				<select id="select_mask" class="select_mask" name="action">
-					{% for mdl_ind in data.mdl_list %}
-						<option value="{{mdl_ind}}">{{mdl_ind}}</option>
-					{% endfor %}
-					</select>
-
-				<select id="select_model" class="select_model" name="action">
-					{% for mdl_ind in data.mdl_list %}
-						<option value="{{mdl_ind}}">{{mdl_ind}}</option>
-					{% endfor %}
-					</select>
-
-				<button type="submit" name="action", value="create_grid" class="create_grid">Create Grid</button>
-				<button type="submit" name="action", value="create_mask" class="create_mask">Segment Image</button>
-				<button type="submit" name="action", value="get_points" class="get_points">Get Grid Points</button>
-				<button type="submit" name="action", value="clear_data" class="clear_data">Clear Data</button>
-
-				<label for="pt_rad" class="pt_rad_label">Point Radius</label>
-				<input type="text" id="pt_rad" name="pt_rad" class="pt_rad" size=40></input>
-
-				<label for="row_count" class="row_count_label">Grid Rows</label>
-				<input type="text" id="row_count" name="row_count" class="row_count" size=5></input>
-
-				<label for="col_count" class="col_count_label">Grid Columns</label>
-				<input type="text" id="col_count" name="col_count" class="col_count" size=5></input>
-
-				<label for="row_space" class="row_space_label">Grid Row Space</label>
-				<input type="text" id="row_space" name="row_space" class="row_space" size=5></input>
-
-				<label for="col_space" class="col_space_label">Grid Column Space</label>
-				<input type="text" id="col_space" name="col_space" class="col_space" size=5></input>
-
-				<label for="grid_w" class="grid_w_label">Grid Width</label>
-				<input type="text" id="grid_w" name="grid_w" class="grid_w" size=5></input>
-
-				<label for="grid_l" class="grid_l_label">Grid Height</label>
-				<input type="text" id="grid_l" name="grid_l" class="grid_l" size=5></input>
-
-				<label for="grid_x" class="grid_x_label">Grid X-offset</label>
-				<input type="text" id="grid_x" name="grid_x" class="grid_x" size=5></input>
-
-				<label for="grid_y" class="grid_y_label">Grid Y-offset</label>
-				<input type="text" id="grid_y" name="grid_y" class="grid_y" size=5></input>
-		</form>
-
-		<label for="image_check" class="image_check_label">Sample Image</label>
-		<input type="checkbox" id="image_check" class="image_check" value="image_display" style="display:none"></input>
-
-		<label for="grid_check" class="grid_check_label">Grid Mask</label>
-		<input type="checkbox" id="grid_check" class="grid_check" value="grid_display" style="display:none"></input>
-
-		<label for="mask_check" class="mask_check_label">Segmented Mask</label>
-		<input type="checkbox" id="mask_check" class="mask_check" value="mask_display" style="display:none"></input>
-
-		<label for="zoom_slider" class="zoom_slider_label">Zoom Level</label>
-		<input type="range" id="zoom_slider" class="zoom_slider" name="zoom_offset" min=1 max=10 value=1 style="display:none">
-
-		<label for="x_slider" class="x_slider_label">X Offset</label>
-		<input type="range" id="x_slider" class="x_slider" name="zoom_offset" min=0 max=10 value=0 style="display:none">
-
+			<div class="output_window" id="output_window">
+				<label id="points_display" class="display" disabled=true>{{data.point_text}}</label>
+				<label id="output_display" class="display" disabled=true>{{data.output_text}}</label>
+				<form id="form_upload" class="form_upload" action="{{url_for('sopia_upload')}}" method="post" enctype="multipart/form-data">
+					<div class="element">
+						<label for="upload_image" class="label">Image</label>
+						<input type="file" id="upload_image" class="upload">
+					</div>
+					<div class="element">
+						<label for="upload_grid" class="label">Grid</label>
+						<input type="file" id="upload_grid" class="upload">
+					</div>
+					<div class="element">
+						<label for="upload_mask" class="label">Mask</label>
+						<input type="file" id="upload_mask" class="upload">
+					</div>
+					<button type="submit" name="upload", value="upload_images" class="button">Upload Images</button>
+					<div class="element">
+						<label for="upload_config" class="label">Config</label>
+						<input type="file" id="upload_config" class="upload">
+					</div>
+					<div class="element">
+						<label for="upload_path" class="label">Paths</label>
+						<input type="file" id="upload_path" class="upload">
+					</div>
+					<button type="submit" name="upload", value="upload_model" class="button">Upload Model</button>
+				</form>
+			</div>
 		</div>
 	</body>
 </html>
