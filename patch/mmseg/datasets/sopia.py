@@ -20,9 +20,13 @@ class SopiaDataset(BaseSegDataset):
             [106, 176, 25],
         ],
     )
-    def __init__(self, **kwargs):
-        super(SopiaDataset, self).__init__(
+    def __init__(self,
             img_suffix='_raw.png',
             seg_map_suffix='_seg.png',
             reduce_zero_label=True,
+            **kwargs):
+        super().__init__(
+            img_suffix=img_suffix,
+            seg_map_suffix=seg_map_suffix,
+            reduce_zero_label=reduce_zero_label,
             **kwargs)
