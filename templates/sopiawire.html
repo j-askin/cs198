@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>SOPIA 1 - v0.67</title>
+		<meta name="description" content="sopia project">
+		<meta name="author" content="miguel martinez">
+		<link rel="stylesheet" type="text/css" href="../static/styles.css">
+		<script src="../static/scripts.js"></script>
+		<style>
+			body {background: #E5E5E5;}
+		</style>
+	</head>
+
+	<body>
+		<form id="form_upload_image" class="form_action" action="sopia/upload/image" method="post" enctype="multipart/form-data"></form>
+		<form id="form_upload_grid" class="form_action" action="sopia/upload/grid" method="post" enctype="multipart/form-data"></form>
+		<form id="form_upload_mask" class="form_action" action="sopia/upload/mask" method="post" enctype="multipart/form-data"></form>
+		<form id="form_upload_model" class="form_action" action="sopia/upload/model" method="post" enctype="multipart/form-data"></form>
+
+		<form id="form_update_image" class="form_action" action="sopia/update/image" method="post" enctype="multipart/form-data"></form>
+		<form id="form_update_grid" class="form_action" action="sopia/update/grid" method="post" enctype="multipart/form-data"></form>
+		<form id="form_update_mask" class="form_action" action="sopia/update/mask" method="post" enctype="multipart/form-data"></form>
+		<form id="form_update_model" class="form_action" action="sopia/update/model" method="post" enctype="multipart/form-data"></form>
+
+		<form id="form_create_grid" class="form_action" action="sopia/generate/grid" method="post" enctype="multipart/form-data"></form>
+		<form id="form_create_mask" class="form_action" action="sopia/generate/mask" method="post" enctype="multipart/form-data"></form>
+		<form id="form_get_points" class="form_action" action="sopia/generate/points" method="post" enctype="multipart/form-data"></form>
+
+		<form id="form_update_points" class="form_action" action="sopia/update/points" method="post" enctype="multipart/form-data"></form>
+
+		<form id="form_compare_points" class="form_action" action="sopia/compare" method="post" enctype="multipart/form-data"></form>
+		<form id="form_clear_data" class="form_action" action="sopia/clear" method="post" enctype="multipart/form-data"></form>
+		
+		<div class="main_window" id="main_window">
+			<div class="image_window" id="image_window">
+				<div class="image_board" id="image_board">
+					<img src="../static/images/test/test.png" id="image_display" class="image_display" alt ="sample image layer"></img>
+					<img src="../static/images/test/test.grid.png" id="grid_display" class="grid_display" alt="grid image layer"></img>
+					<img src="../static/images/test/test.mask.png" id="mask_display" class="mask_display" alt="segmented mask layer"></img>
+				</div>
+			</div>
+
+			<div class="options_window" id="options_window">
+				<div class="element">
+					<div class="element">
+						<select id="select_image" class="select" name="image"form="form_update_image" required>
+							<option value="" class="option" disabled=true selected=true>Select Image</option>
+							<option value="../static/images/test/test.png" class="option">"test"</option>
+							<option value="../static/images/image/image.png" class="option">"image"</option>
+						</select>
+						<button type="submit" name="action", value="update_image" class="button" form="form_update_image">Update Image</button>
+					</div>
+
+				<hr>
+					<div class="element">
+						<select id="select_grid" class="select" name="grid"form="form_update_grid" required>
+							<option value="" class="option" disabled selected>Select Grid</option>
+							<option value="../static/images/image/grid/upload.grid.png" class="option">"upload"</option>
+							<option value="../static/images/image/grid/test.grid.png" class="option">"test"</option>
+						</select>
+						<button type="submit" name="action", value="update_mask" class="button" form="form_update_grid">Update Grid</button>
+					</div>
+
+				<hr>
+					<div class="element">
+						<select id="select_mask" class="select" name="mask"form="form_update_mask" required>
+							<option value="" class="option" disabled selected>Select Mask</option>
+							<option value="../static/images/image/mask/upload.mask.png" class="option">"upload"</option>
+							<option value="../static/images/image/mask/mask_test.mask.png" class="option">"seg_test"</option>
+						</select>
+						<button type="submit" name="action", value="update_grid" class="button" form="form_update_mask">Update Mask</button>
+					</div>
+
+				<hr>
+					<div class="element">
+						<select id="select_model" class="select" name="model"form="form_update_model" required>
+							<option value="" class="option" disabled selected>Select Model</option>
+							<option value="../static/models/test/mask_test" class="option">"mask_test"</option>
+						</select>
+						<button type="submit" name="action", value="update_model" class="button" form="form_update_model" required>Update Model</button>
+					</div>
+				</div>
+				
+				<hr>
+				<div class="element">
+					<input type="text" id="row_count" name="row_count" class="textinput" size=5 placeholder="# Of Rows" form="form_create_grid" required></input>
+					<input type="text" id="col_count" name="col_count" class="textinput" size=5 placeholder="# Of Columns" form="form_create_grid" required></input>
+					<input type="text" id="row_space" name="row_space" class="textinput" size=5 placeholder="Row Spacing" form="form_create_grid" required></input>
+					<input type="text" id="col_space" name="col_space" class="textinput" size=5 placeholder="Column Spacing" form="form_create_grid" required></input>
+					<input type="text" id="grid_w" name="grid_w" class="textinput" size=5 placeholder="Grid Width" form="form_create_grid" required></input>
+					<input type="text" id="grid_l" name="grid_l" class="textinput" size=5 placeholder="Grid Length" form="form_create_grid" required></input>
+					<input type="text" id="grid_x" name="grid_x" class="textinput" size=5 placeholder="Grid X Position" form="form_create_grid" required></input>
+					<input type="text" id="grid_y" name="grid_y" class="textinput" size=5 placeholder="Grid Y Position" form="form_create_grid" required></input>
+					<input type="text" id="grid_name" name="grid_name" class="textinput" size=5 placeholder="Grid Name" form="form_create_grid" required></input>
+					<button type="submit" name="action", value="create_grid" class="button" form="form_create_grid">Create Grid</button>
+				</div>
+				
+				<hr>
+				<div class="element">
+					<input type="text" id="mask_name" name="mask_name" class="textinput" size=5 placeholder="Mask Name" form="form_create_mask" required></input>
+					<button type="submit" name="action", value="create_mask" class="button" form="form_create_mask">Segment Image</button>
+				</div>
+
+				<hr>
+				<div class="element">
+					<input type="text" id="pt_rad" name="pt_rad" class="textinput" size=5 placeholder="Point Radius" form="form_update_points" required></input>
+					<button type="submit" name="action", value="get_points" class="button"  form="form_update_points">Get Grid Points</button>
+					<button type="submit" name="action", value="get_all_points" class="button"  form="form_update_points">Compare Model Points</button>
+				</div>
+
+			</div>
+
+			<div class="output_window" id="output_window">
+				<pre id="points_display" class="textdisplay" disabled=true>"Text relating to point output goes here."</pre>
+				<hr>
+				<pre id="output_display" class="textdisplay" disabled=true>"Text relating to function output goes here."</pre>
+				<hr>
+					<div class="element">
+						<label for="upload_image" class="label">Image</label>
+						<input type="file" id="upload_image" class="upload" form="form_upload_image" required>
+						<button type="submit" name="upload_image", value="upload_image" class="button" form="form_upload_image">Upload Image</button>
+					</div>
+					<div class="element">
+						<label for="upload_grid" class="label">Grid</label>
+						<input type="file" id="upload_grid" class="upload" form="form_upload_grid" required>
+						<button type="submit" name="upload_grid", value="upload_grid" class="button" form="form_upload_grid">Upload Grid</button>
+					</div>
+					<div class="element">
+						<label for="upload_mask" class="label">Mask</label>
+						<input type="file" id="upload_mask" class="upload" form="form_upload_mask" required>
+						<button type="submit" name="upload_mask", value="upload_grid" class="button" form="form_upload_mask">Upload Mask</button>
+					</div>
+				<hr>
+					<div class="element">
+						<label for="upload_config" class="label">Config</label>
+						<input type="file" id="upload_config" class="upload" form="form_upload_model" required>
+						<label for="upload_path" class="label">Paths</label>
+						<input type="file" id="upload_path" class="upload" form="form_upload_model" required>
+						<button type="submit" name="upload_model", value="upload_model" class="button" form="form_upload_model">Upload Model</button>
+					</div>
+					
+				<hr>
+				<div>
+					<button type="submit" name="action", value="clear_data" class="button"  form="form_clear_data">Clear Loaded Data</button>
+				</div>
+				
+				<hr>
+				<div>
+				<div>
+				<div class="element">
+					<label for="image_check" class="label">Sample Image</label>
+					<input type="checkbox" id="image_check" class="check" value="image_display"></input>
+				</div>
+				<div class="element">
+					<label for="grid_check" class="label">Grid Mask</label>
+					<input type="checkbox" id="grid_check" class="check" value="grid_display"></input>
+				</div>
+				<div class="element">
+					<label for="mask_check" class="label">Segmented Mask</label>
+					<input type="checkbox" id="mask_check" class="check" value="mask_display"></input>
+				</div>
+				</div>
+				<div>
+				<div class="element">
+					<label for="zoom_slider" class="label">Zoom Level</label>
+					<input type="range" id="zoom_slider" class="slider" name="zoom_offset" min=1 max=10 value=1>
+				</div>
+
+				<div class="element">
+					<label for="x_slider" class="label">X Offset</label>
+					<input type="range" id="x_slider" class="slider" name="zoom_offset" min=0 max=10 value=0>
+				</div>
+
+				<div class="element">
+					<label for="y_slider" class="label">Y Offset</label>
+					<input type="range" id="y_slider" class="slider" name="zoom_offset" min=0 max=10 value=0>
+				</div>
+				</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script>
+		
+	</script>
+</html>
+
+
