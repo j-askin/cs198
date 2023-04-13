@@ -1,27 +1,27 @@
 .main_window {
-  background-color:rgba(56, 53, 55, 0.8); height:90%; width:100%; position:absolute; z-index:0; display:block;
+  background-color:rgba(56, 53, 55, 0.8); height:100%; width:100%; position:absolute; z-index:0; display:block;
 }
 .image_window {
-  background-color:rgba(198, 43, 43, 0.8); height:100%; width:60%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;
+  background-color:rgba(198, 43, 43, 0.8); height:100%; width:50%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
 }
 .options_window {
-  background-color:rgba(29, 179, 114, 0.8); height:100%; width:20%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;
+  background-color:rgba(29, 179, 114, 0.8); height:100%; width:20%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
 }
 .output_window {
-  background-color:rgba(49, 40, 178, 0.8); height:100%; width:20%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;
+  background-color:rgba(49, 40, 178, 0.8); height:100%; width:30%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
 }
 
 .image_board {
-  background-color:rgba(166, 220, 30, 0.9); height:100%; width:100%; min-height:720px; min-width:960px; position:absolute; opacity:1.0; border: 1px; background-repeat:no-repeat; z-index:99; 
+  background-color:rgba(166, 220, 30, 0.1); height:100%; width:100%; position:absolute; opacity:1.0; border: 1px; z-index:99; object-fit:contain; 
 }
 .image_display {
-  background-color:rgba(255, 255, 255, 1); height:100%; width:100%;min-height:720px; min-width:960px; position:absolute; opacity:1.0; border:1px; background-repeat:no-repeat; z-index:3; 
+  background-color:rgba(255, 255, 255, 1);max-height:100%; max-width:100%;position:absolute; opacity:1.0; border:1px; background-repeat:no-repeat; z-index:3; 
 }
 .grid_display {
-  background-color:rgba(255, 255, 255, 1); height:100%; width:100%;min-height:720px; min-width:960px; position:absolute; opacity:0.7; border:1px; background-repeat:no-repeat; z-index:4;
+  background-color:rgba(255, 255, 255, 1); max-height:100%; max-width:100%; position:absolute; opacity:0.7; border:1px; background-repeat:no-repeat; z-index:4;
 }
 .mask_display {
-  background-color:rgba(255, 255, 255, 1);height:100%; width:100%; min-height:720px; min-width:960px; position:absolute; opacity:0.3; border:1px; background-repeat:no-repeat; z-index:5;
+  background-color:rgba(255, 255, 255, 1);max-height:100%; max-width:100%; position:absolute; opacity:0.3; border:1px; background-repeat:no-repeat; z-index:5;
 }
 
 .points_display {
@@ -38,7 +38,9 @@
 .label {
   color:rgba(0, 0, 0, 1); width:220px; height:35px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0;z-index:2; 
 }
-
+.textdisplay {
+  color:rgba(0, 0, 0, 1); background-color: rgba(255, 255, 255,1); width:220px; height:35px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0;z-index:2; 
+}
 .button {
   background-color:rgba(255, 255, 255, 0.5); width:150px; height:30px; position:relative; z-index:2; 
 }
