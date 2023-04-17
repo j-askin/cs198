@@ -5,36 +5,39 @@
 		<title>SOPIA 1 - v0.67</title>
 		<meta name="description" content="sopia project">
 		<meta name="author" content="miguel martinez">
-		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}">
-		<script src="{{url_for('static', filename='scripts.js')}}"></script>
+		<link rel="stylesheet" type="text/css" href="../static/styles.css">
+		<script src="../static/scripts.js"></script>
 		<style>
 			body {background: #E5E5E5;}
 		</style>
 	</head>
 
 	<body>
-		<form id="form_upload_image" class="form_action" action="{{url_for('sopia_upload_image')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_upload_grid" class="form_action" action="{{url_for('sopia_upload_grid')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_upload_mask" class="form_action" action="{{url_for('sopia_upload_mask')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_upload_model" class="form_action" action="{{url_for('sopia_upload_model')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_upload_points" class="form_action" action="{{url_for('sopia_upload_points')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_update_image" class="form_action" action="{{url_for('sopia_update_image')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_update_grid" class="form_action" action="{{url_for('sopia_update_grid')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_update_mask" class="form_action" action="{{url_for('sopia_update_mask')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_update_model" class="form_action" action="{{url_for('sopia_update_model')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_update_points" class="form_action" action="{{url_for('sopia_update_points')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_create_grid" class="form_action" action="{{url_for('sopia_create_grid')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_create_mask" class="form_action" action="{{url_for('sopia_create_mask')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_create_mask" class="form_action" action="{{url_for('sopia_create_points')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_compare_points" class="form_action" action="{{url_for('sopia_compare_points')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_clear" class="form_action" action="{{url_for('sopia_clear')}}" method="post" enctype="multipart/form-data"></form>
+		<form id="form_upload_image" class="form_action" action="sopia/upload/image" method="post" enctype="multipart/form-data"></form>
+		<form id="form_upload_grid" class="form_action" action="sopia/upload/grid" method="post" enctype="multipart/form-data"></form>
+		<form id="form_upload_mask" class="form_action" action="sopia/upload/mask" method="post" enctype="multipart/form-data"></form>
+		<form id="form_upload_model" class="form_action" action="sopia/upload/model" method="post" enctype="multipart/form-data"></form>
+
+		<form id="form_update_image" class="form_action" action="sopia/update/image" method="post" enctype="multipart/form-data"></form>
+		<form id="form_update_grid" class="form_action" action="sopia/update/grid" method="post" enctype="multipart/form-data"></form>
+		<form id="form_update_mask" class="form_action" action="sopia/update/mask" method="post" enctype="multipart/form-data"></form>
+		<form id="form_update_model" class="form_action" action="sopia/update/model" method="post" enctype="multipart/form-data"></form>
+
+		<form id="form_create_grid" class="form_action" action="sopia/generate/grid" method="post" enctype="multipart/form-data"></form>
+		<form id="form_create_mask" class="form_action" action="sopia/generate/mask" method="post" enctype="multipart/form-data"></form>
+		<form id="form_get_points" class="form_action" action="sopia/generate/points" method="post" enctype="multipart/form-data"></form>
+
+		<form id="form_update_points" class="form_action" action="sopia/update/points" method="post" enctype="multipart/form-data"></form>
+
+		<form id="form_compare_points" class="form_action" action="sopia/compare" method="post" enctype="multipart/form-data"></form>
+		<form id="form_clear_data" class="form_action" action="sopia/clear" method="post" enctype="multipart/form-data"></form>
 		
 		<div class="main_window" id="main_window">
 			<div class="image_window" id="image_window">
 				<div class="image_board" id="image_board">
-					<img src="{{url_for('static', filename=data.img)}}" id="image_display" class="image_display" alt ="sample image layer"></img>
-					<img src="{{url_for('static', filename=data.grid_img)}}" id="grid_display" class="grid_display" alt="grid image layer"></img>
-					<img src="{{url_for('static', filename=data.mask_img)}}" id="mask_display" class="mask_display" alt="segmented mask layer"></img>
+					<img src="../static/images/test/test.png" id="image_display" class="image_display" alt ="sample image layer"></img>
+					<img src="../static/images/test/test.grid.png" id="grid_display" class="grid_display" alt="grid image layer"></img>
+					<img src="../static/images/test/test.mask.png" id="mask_display" class="mask_display" alt="segmented mask layer"></img>
 				</div>
 			</div>
 
@@ -42,9 +45,9 @@
 				<div class="element">
 					<div class="element">
 						<select id="select_image" class="select" name="image"form="form_update_image" required>
-							{% for image_index in range(data.image_list|length) %}
-								<option value={{mask_index}} {% if image_index == data.image_idx %} selected {% endif %} {% if image_index == 0 %} disabled {% endif %} class="option">{% if image_index == 0 %} Select Image {%else%} {{data.image_list[image_index]}} {% endif %}</option>
-							{% endfor %}
+							<option value="" class="option" disabled=true selected=true>Select Image</option>
+							<option value="../static/images/test/test.png" class="option">test</option>
+							<option value="../static/images/image/image.png" class="option">image</option>
 						</select>
 						<button type="submit" name="action", value="update_image" class="button" form="form_update_image">Update Image</button>
 					</div>
@@ -52,9 +55,9 @@
 				<hr>
 					<div class="element">
 						<select id="select_grid" class="select" name="grid"form="form_update_grid" required>
-							{% for grid_index in range(data.grid_list|length) %}
-							<option value={{grid_index}} {% if grid_index == data.grid_idx %} selected {% endif %} {% if grid_index == 0 %} disabled {% endif %} class="option">{% if grid_index == 0 %} Select Grid {%else%} {{grid_index}} {% endif %}</option>
-							{% endfor %}
+							<option value="" class="option" disabled selected>Select Grid</option>
+							<option value="../static/images/image/grid/upload.grid.png" class="option">upload</option>
+							<option value="../static/images/image/grid/test.grid.png" class="option">test</option>
 						</select>
 						<button type="submit" name="action", value="update_mask" class="button" form="form_update_grid">Update Grid</button>
 					</div>
@@ -62,9 +65,9 @@
 				<hr>
 					<div class="element">
 						<select id="select_mask" class="select" name="mask"form="form_update_mask" required>
-							{% for mask_index in range(data.mask_list|length) %}
-							<option value={{mask_index}} {% if mask_index == data.mask_idx %} selected {% endif %} {% if mask_index == 0 %} disabled {% endif %} class="option">{% if mask_index == 0 %} Select Mask {%else%} {{mask_index}} {% endif %}</option>
-							{% endfor %}
+							<option value="" class="option" disabled selected>Select Mask</option>
+							<option value="../static/images/image/mask/upload.mask.png" class="option">upload</option>
+							<option value="../static/images/image/mask/mask_test.mask.png" class="option">seg_test</option>
 						</select>
 						<button type="submit" name="action", value="update_grid" class="button" form="form_update_mask">Update Mask</button>
 					</div>
@@ -72,9 +75,8 @@
 				<hr>
 					<div class="element">
 						<select id="select_model" class="select" name="model"form="form_update_model" required>
-							{% for model_index in range(data.model_list|length) %}
-							<option value={{model_index}} {% if model_index == data.model_idx %} selected {% endif %} {% if model_index == 0 %} disabled {% endif %} class="option">{% if model_index == 0 %} Select Model {%else%} {{data.model_list[model_index]}} {% endif %}</option>
-							{% endfor %}
+							<option value="" class="option" disabled selected>Select Model</option>
+							<option value="../static/models/test/mask_test" class="option">mask_test</option>
 						</select>
 						<button type="submit" name="action", value="update_model" class="button" form="form_update_model" required>Update Model</button>
 					</div>
@@ -93,27 +95,26 @@
 					<input type="text" id="grid_name" name="grid_name" class="textinput" size=5 placeholder="Grid Name" form="form_create_grid" required></input>
 					<button type="submit" name="action", value="create_grid" class="button" form="form_create_grid">Create Grid</button>
 				</div>
+				
 				<hr>
 				<div class="element">
 					<input type="text" id="mask_name" name="mask_name" class="textinput" size=5 placeholder="Mask Name" form="form_create_mask" required></input>
 					<button type="submit" name="action", value="create_mask" class="button" form="form_create_mask">Segment Image</button>
 				</div>
+
 				<hr>
 				<div class="element">
-					<input type="text" id="pt_rad" name="pt_rad" class="textinput" size=5 placeholder="Point Radius" form="form_create_points" required></input>
-					<button type="submit" name="action", value="get_points" class="button"  form="form_create_points">Get Grid Points</button>
-				</div>
-				<hr>
-				<div class="element">
-					<button type="submit" name="action", value="get_all_points" class="button"  form="form_compare_points">Compare Model Points</button>
+					<input type="text" id="pt_rad" name="pt_rad" class="textinput" size=5 placeholder="Point Radius" form="form_update_points" required></input>
+					<button type="submit" name="action", value="get_points" class="button"  form="form_update_points">Get Grid Points</button>
+					<button type="submit" name="action", value="get_all_points" class="button"  form="form_update_points">Compare Model Points</button>
 				</div>
 
 			</div>
 
 			<div class="output_window" id="output_window">
-				<pre id="points_display" class="textdisplay" disabled=true>{{data.point_text}}</pre>
+				<pre id="points_display" class="textdisplay" disabled=true>Text relating to point output goes here.</pre>
 				<hr>
-				<pre id="output_display" class="textdisplay" disabled=true>{{data.output_text}}</pre>
+				<pre id="output_display" class="textdisplay" disabled=true>Text relating to function output goes here.</pre>
 				<hr>
 					<div class="element">
 						<label for="upload_image" class="label">Image</label>
@@ -141,7 +142,7 @@
 					
 				<hr>
 				<div>
-					<button type="submit" name="action", value="clear_data" class="button"  form="form_clear">Clear Loaded Data</button>
+					<button type="submit" name="action", value="clear_data" class="button"  form="form_clear_data">Clear Loaded Data</button>
 				</div>
 				
 				<hr>

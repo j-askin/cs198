@@ -2,10 +2,10 @@
   background-color:rgba(56, 53, 55, 0.8); height:100%; width:100%; position:absolute; z-index:0; display:block;
 }
 .image_window {
-  background-color:rgba(198, 43, 43, 0.8); height:100%; width:50%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
+  background-color:rgba(198, 43, 43, 0.8); height:100%; width:40%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
 }
 .options_window {
-  background-color:rgba(29, 179, 114, 0.8); height:100%; width:20%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
+  background-color:rgba(29, 179, 114, 0.8); height:100%; width:30%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
 }
 .output_window {
   background-color:rgba(49, 40, 178, 0.8); height:100%; width:30%; min-height:800px; min-width:420px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
