@@ -46,10 +46,10 @@ class Data:
         self.get_models()
 
         #test data
-        self.image_idx = 2
-        self.mask_idx = 1
-        self.grid_idx = 1
-        self.model_idx = 1
+        self.image_idx = 0
+        self.mask_idx = 0
+        self.grid_idx = 0
+        self.model_idx = 0
 
         self.get_paths()
 
@@ -65,10 +65,10 @@ class Data:
             folder_dir = os.path.join(images_dir,folder)
             if os.path.isdir(folder_dir):
                 for file in os.listdir(folder_dir):
-                    if os.path.isfile(os.path.join(folder_dir,file)) and os.path.splitext(file)[0] == folder and os.path.splitext(file)[1] in [".png",".jpg",".jpeg"]:
+                    if os.path.isfile(os.path.join(folder_dir,file)) and os.path.splitext(file)[1] in [".png",".jpg",".jpeg"]: # and os.path.splitext(file)[0] == folder
                         #add image and all masks and grids saved
                         image = os.path.relpath(folder_dir,self.image_dir).replace("\\","/")
-                        self.image_list.append(os.path.join(folder_dir,file))
+                        self.image_list.append("images/" + os.path.join(folder,file).replace("\\","/"))
                         self.grid_list[folder]=[""]
                         self.mask_list[folder]=[""]
                         grids_dir = os.path.join(folder_dir,"grid")
@@ -83,12 +83,12 @@ class Data:
                         for mask in os.listdir(masks_dir):
                             if os.path.isfile(os.path.join(masks_dir,mask)) and os.path.splitext(mask)[1] == ".png" and os.path.splitext(os.path.splitext(mask)[0])[1] == ".mask":
                                 self.mask_list[folder].append(mask)
-                        break
         self.image_list.sort()
         print("Images:")
         for image in self.image_list:
             print(image)
-            folder = os.path.splitext(os.path.split(folder)[1])[0]
+        else:
+            folder = os.path.split(os.path.split(image)[0])[1]
             print(f"Grids of {folder}:")
             print(self.grid_list[folder])
             print(f"Masks of {folder}:")
@@ -106,8 +106,11 @@ class Data:
             if os.path.isdir(folder_dir):
                 for file in os.listdir(folder_dir):
                     if ((os.path.splitext(file)[0]==folder) and (os.path.splitext(file)[1]==".pth") and os.path.isfile(os.path.splitext(os.path.join(folder_dir,file))[0]+".py")):
+                        #                               ^   I think this will return False everytime
+                        #                                   not sure if this is supposed to be "file" instead
+                        #                                   if it is, then change to "file"
+                        #                                   if it's supposed to be "folder", change this to os.path.split(os.path.split(file)[0])[1] == folder
                         self.model_list.append(os.path.relpath(os.path.join(folder_dir,file),self.model_dir).replace("\\","/"))
-                        break
         self.model_list.sort()
         print("Models:")
         print(self.model_list)
@@ -119,10 +122,12 @@ class Data:
             masks = self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]]
             if (self.grid_idx >= len(grids)):
                 self.grid_idx = 0
-            if (self.mask_idx >= len(grids)):
+            if (self.mask_idx >= len(masks)):
                 self.mask_idx = 0
             print("Models:")
             print(self.model_list)
+            # print(self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.grid_idx])
+            # exit()
             self.grid_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"grid",self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.grid_idx]),self.template).replace("\\","/")
             self.mask_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"mask",self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.mask_idx]),self.template).replace("\\","/")
             self.config = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".py").replace("\\","/")
@@ -137,6 +142,7 @@ class Data:
         try:
             self.get_images()
             self.image_idx = self.image_list.index(image_name)
+            self.img = self.image_list[self.image_idx]
         except ValueError:
             print(f"No such image {image_name} exists.")
         self.image_count = len(self.image_list)
@@ -379,6 +385,7 @@ def sopia_upload_model():
 def sopia_update_image():
     print("Updating Image!")
     sopia_update()
+    return render_template("sopia.html", data=data)
 
 @app.route("/sopia/update/grid/",methods=['GET','POST'])
 def sopia_update_grid():
