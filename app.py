@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, request, redirect, url_for
+from flask import Flask, flash, render_template, Response, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import sopia
 import os
@@ -126,8 +126,6 @@ class Data:
                 self.mask_idx = 0
             print("Models:")
             print(self.model_list)
-            # print(self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.grid_idx])
-            # exit()
             self.grid_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"grid",self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.grid_idx]),self.template).replace("\\","/")
             self.mask_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"mask",self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.mask_idx]),self.template).replace("\\","/")
             self.config = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".py").replace("\\","/")
@@ -230,20 +228,40 @@ def sopia_upload():
     data.output_text = ""
     debug_mes()
     if request.method=="POST":
-        match request.form["action"]:
+        match list(request.form.keys())[0]:
             case "upload_image":
-                image_file,image_name = get_file("image_file",["png","jpg","jpeg"])
-                if not (image_file in ["",None] or image_name in ["",None]):
-                    #correct invalid file names
-                    if os.splitext(image_name)[0][-5:] in [".grid",".mask"]:
-                        image_name = os.splitext(image_name)[0][:-5]+os.splitext(image_name)[1]
-                        if sopia.verify_path(data.image_dir,os.splitext(image_name)[0]):
-                            image_file.save(os.path.join(data.image_dir,os.splitext(image_name)[0],image_name))
-                            print(f"Saved image to {os.path.join(data.image_dir,os.splitext(image_name)[0],image_name)}")
-                            app.logger.info(os.path.join(os.splitext(image_name)[0],image_name))
-                            data.update_image(os.path.join(os.splitext(image_name)[0],image_name))
-                            app.logger.info(data.image_idx)
-                app.logger.info("Image upload")
+                # image_file,image_name = get_file("image_file",["png","jpg","jpeg"])
+                # if not (image_file in ["",None] or image_name in ["",None]):
+                #     #correct invalid file names
+                #     if os.splitext(image_name)[0][-5:] in [".grid",".mask"]:
+                #         image_name = os.splitext(image_name)[0][:-5]+os.splitext(image_name)[1]
+                #         if sopia.verify_path(data.image_dir,os.splitext(image_name)[0]):
+                #             image_file.save(os.path.join(data.image_dir,os.splitext(image_name)[0],image_name))
+                #             print(f"Saved image to {os.path.join(data.image_dir,os.splitext(image_name)[0],image_name)}")
+                #             app.logger.info(os.path.join(os.splitext(image_name)[0],image_name))
+                #             data.update_image(os.path.join(os.splitext(image_name)[0],image_name))
+                #             app.logger.info(data.image_idx)
+                # app.logger.info("Image upload")
+
+                #------------This section is a modified version of the code taken from ------------------
+                #------------ https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/ ----------
+                if 'file' not in request.files:
+                    flash('No file part')
+                    return redirect(request.url)
+                file = request.files['file']
+                # If the user does not select a file, the browser submits an
+                # empty file without a filename.
+                if file.filename == '':
+                    flash('No selected file')
+                    return render_template("sopia.html",data=data)
+                if file and file.filename.split(".")[-1] in ["png", "jpg", "jpeg"]:
+                    filename = secure_filename(file.filename)
+                    upload_folder = app.config['UPLOAD_FOLDER'] + "\\images\\uploads"
+                    if not os.path.exists(upload_folder):
+                        os.mkdir(upload_folder)
+                    file.save(os.path.join(upload_folder, filename))
+                #----------------------------------------------------------------------------------------
+
             case "upload_grid":
                 grid_file,grid_name = get_file("grid_file",["png"])
                 app.logger.info("Grid upload")
@@ -365,21 +383,25 @@ def sopia_clear():
 def sopia_upload_image():
     print("Uploading Image!")
     sopia_upload()
+    return render_template("sopia.html",data=data)
 
 @app.route("/sopia/upload/grid/",methods=['GET','POST'])
 def sopia_upload_grid():
     print("Uploading Grid!")
     sopia_upload()
+    return render_template("sopia.html",data=data)
 
 @app.route("/sopia/upload/mask/",methods=['GET','POST'])
 def sopia_upload_mask():
     print("Uploading Mask!")
     sopia_upload()
+    return render_template("sopia.html",data=data)
 
 @app.route("/sopia/upload/model/",methods=['GET','POST'])
 def sopia_upload_model():
     print("Uploading Model!")
     sopia_upload()
+    return render_template("sopia.html",data=data)
 
 @app.route("/sopia/update/image/",methods=['GET','POST'])
 def sopia_update_image():
@@ -391,11 +413,13 @@ def sopia_update_image():
 def sopia_update_grid():
     print("Updating Grid!")
     sopia_update()
+    return render_template("sopia.html",data=data)
 
 @app.route("/sopia/update/mask/",methods=['GET','POST'])
 def sopia_update_mask():
     print("Updating Mask!")
     sopia_update()
+    return render_template("sopia.html",data=data)
 
 @app.route("/sopia/update/model/",methods=['GET','POST'])
 def sopia_update_model():
