@@ -50,8 +50,8 @@
 				<hr>
 					<div class="element">
 						<select id="select_grid" class="select" name="grid" form="form_update_grid" required>
-							{% for grid_index in range(data.grid_list|length) %}
-							<option value={{grid_index}} {% if grid_index == data.grid_idx %} selected {% endif %} {% if grid_index == 0 %} disabled {% endif %} class="option">{% if grid_index == 0 %} Select Grid {%else%} {{grid_index}} {% endif %}</option>
+							{% for grid_index in range(data.grid_list[data.img.split('/')[-2]]|length) %}
+								<option value={{data.grid_list[data.img.split('/')[-2]][grid_index]}} {% if grid_index == data.grid_idx %} selected {% endif %} {% if grid_index == 0 %} disabled {% endif %} class="option">{% if grid_index == 0 %} Select Image {% else %} {{data.grid_list[data.img.split('/')[-2]][grid_index]}} {% endif %}</option>
 							{% endfor %}
 						</select>
 						<button type="submit" name="action", value="update_grid" class="button" form="form_update_grid">Update Grid</button>
@@ -60,8 +60,8 @@
 				<hr>
 					<div class="element">
 						<select id="select_mask" class="select" name="mask" form="form_update_mask" required>
-							{% for mask_index in range(data.mask_list|length) %}
-							<option value={{mask_index}} {% if mask_index == data.mask_idx %} selected {% endif %} {% if mask_index == 0 %} disabled {% endif %} class="option">{% if mask_index == 0 %} Select Mask {%else%} {{mask_index}} {% endif %}</option>
+							{% for mask_index in range(data.mask_list[data.img.split('/')[-2]]|length) %}
+								<option value={{data.mask_list[data.img.split('/')[-2]][mask_index]}} {% if mask_index == data.mask_idx %} selected {% endif %} {% if mask_index == 0 %} disabled {% endif %} class="option">{% if mask_index == 0 %} Select Mask {% else %} {{data.mask_list[data.img.split('/')[-2]][mask_index]}} {% endif %}</option>
 							{% endfor %}
 						</select>
 						<button type="submit" name="action", value="update_mask" class="button" form="form_update_mask">Update Mask</button>

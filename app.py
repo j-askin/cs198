@@ -115,24 +115,24 @@ class Data:
 
     #get paths for image files to display, assumes paths are correct
     def get_paths(self):
-            self.img = os.path.relpath(os.path.join(self.image_dir,self.image_list[self.image_idx]),self.template).replace("\\","/")
-            grids = self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]]
-            masks = self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]]
-            if (self.grid_idx >= len(grids)):
-                self.grid_idx = 0
-            if (self.mask_idx >= len(masks)):
-                self.mask_idx = 0
-            print("Models:")
-            print(self.model_list)
-            self.grid_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"grid",self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.grid_idx]),self.template).replace("\\","/")
-            self.mask_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"mask",self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.mask_idx]),self.template).replace("\\","/")
-            self.config = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".py").replace("\\","/")
-            self.pth = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".pth").replace("\\","/")
-            print(self.img)
-            print(self.grid_img)
-            print(self.mask_img)
-            print(self.config)
-            print(self.pth)
+        self.img = os.path.relpath(os.path.join(self.image_dir,self.image_list[self.image_idx]),self.template).replace("\\","/")
+        grids = self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]]
+        masks = self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]]
+        if (self.grid_idx >= len(grids)):
+            self.grid_idx = 0
+        if (self.mask_idx >= len(masks)):
+            self.mask_idx = 0
+        print("Models:")
+        print(self.model_list)
+        self.grid_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"grid",self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.grid_idx]),self.template).replace("\\","/")
+        self.mask_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"mask",self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.mask_idx]),self.template).replace("\\","/")
+        self.config = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".py").replace("\\","/")
+        self.pth = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".pth").replace("\\","/")
+        print(self.img)
+        print(self.grid_img)
+        print(self.mask_img)
+        print(self.config)
+        print(self.pth)
             
     def update_image(self,image_name):
         try:
@@ -142,6 +142,24 @@ class Data:
         except ValueError:
             print(f"No such image {image_name} exists.")
         self.image_count = len(self.image_list)
+
+    def update_grid(self,grid_name):
+        try:
+            self.get_images()
+            self.grid_idx = self.grid_list[self.img.split("/")[-2]].index(grid_name)
+            self.grid_img = self.grid_list[self.img.split("/")[-2]][self.image_idx]
+        except ValueError:
+            print(f"No such image {grid_name} exists.")
+        self.grid_count = len(self.grid_list[self.img.split("/")[-2]])
+
+    def update_mask(self,mask_name):
+        try:
+            self.get_images()
+            self.mask_idx = self.mask_list[self.img.split("/")[-2]].index(mask_name)
+            self.mask_img = self.mask_list[self.img.split("/")[-2]][self.mask_idx]
+        except ValueError:
+            print(f"No such image {mask_name} exists.")
+        self.mask_count = len(self.mask_list[self.img.split("/")[-2]])
 
     def update_model(self,model_name):
         try:
@@ -169,7 +187,6 @@ class Data:
 
     def get_scale(self):
         pass
-
 
 data = Data()
 app = Flask(__name__, template_folder=data.template,static_folder=data.static)
@@ -215,7 +232,8 @@ def get_file(file_label = "image_file",file_path = "static/images", file_ext = [
             return render_template("sopia.html",data=data)
         if file and file.filename.split(".")[-1].lower() in file_ext:
             filename = secure_filename(file.filename)
-            upload_folder = os.path.join(file_path,filename.split(".")[0])
+            print(filename, "yes")
+            upload_folder = os.path.join(file_path,"uploads").replace("\\", "/")
             if (len(filename.split(".")) == 3):
                 upload_folder = os.path.join(upload_folder,filename.split(".")[1])
             if not os.path.exists(upload_folder):
@@ -269,6 +287,7 @@ def sopia_upload():
         data.get_models()
         data.get_paths()
     return render_template("sopia.html",data=data)
+
 @app.route("/sopia/update/",methods=['GET','POST'])
 def sopia_update():
     data.point_text = ""
@@ -284,12 +303,12 @@ def sopia_update():
             case "update_grid":
                 app.logger.info("Grid requested")
                 app.logger.info(request.form["grid"])
-                data.update_image(request.form["grid"])
+                data.update_grid(request.form["grid"])
                 app.logger.info(data.image_idx)
             case "update_mask":
                 app.logger.info("Mask requested")
                 app.logger.info(request.form["mask"])
-                data.update_image(request.form["mask"])
+                data.update_mask(request.form["mask"])
                 app.logger.info(data.image_idx)
             case "update_model":
                 app.logger.info("Model requested")
