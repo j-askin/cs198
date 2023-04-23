@@ -136,6 +136,7 @@ class Data:
             
     def update_image(self,image_name):
         try:
+            self.get_images()
             self.image_idx = self.image_list.index(image_name)
             self.img = self.image_list[self.image_idx]
         except ValueError:
@@ -151,6 +152,7 @@ class Data:
             print(f"No such image {grid_name} exists.")
         self.grid_count = len(self.grid_list[grid_name.split("/")[0]])
 
+
     def update_mask(self,mask_name):
         try:
             self.get_images()
@@ -159,6 +161,7 @@ class Data:
         except ValueError:
             print(f"No such image {mask_name} exists.")
         self.mask_count = len(self.mask_list[mask_name.split("/")[0]])
+
 
     def update_model(self,model_name):
         try:
