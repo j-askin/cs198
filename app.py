@@ -79,10 +79,10 @@ class Data:
                             os.makedirs(masks_dir,exist_ok=True)
                         for grid in os.listdir(grids_dir):
                             if os.path.isfile(os.path.join(grids_dir,grid)) and os.path.splitext(grid)[1] == ".png" and os.path.splitext(os.path.splitext(grid)[0])[1] == ".grid":
-                                self.grid_list[folder].append(grid)
+                                self.grid_list[folder].append(folder + "/grid/" + grid)
                         for mask in os.listdir(masks_dir):
                             if os.path.isfile(os.path.join(masks_dir,mask)) and os.path.splitext(mask)[1] == ".png" and os.path.splitext(os.path.splitext(mask)[0])[1] == ".mask":
-                                self.mask_list[folder].append(mask)
+                                self.mask_list[folder].append(folder + "/mask/" + mask)
         self.image_list.sort()
         print("Images:")
         for image in self.image_list:
@@ -136,7 +136,6 @@ class Data:
             
     def update_image(self,image_name):
         try:
-            self.get_images()
             self.image_idx = self.image_list.index(image_name)
             self.img = self.image_list[self.image_idx]
         except ValueError:
@@ -146,20 +145,20 @@ class Data:
     def update_grid(self,grid_name):
         try:
             self.get_images()
-            self.grid_idx = self.grid_list[self.img.split("/")[-2]].index(grid_name)
-            self.grid_img = self.grid_list[self.img.split("/")[-2]][self.image_idx]
+            self.grid_idx = self.grid_list[grid_name.split("/")[0]].index(grid_name)
+            self.grid_img = "images/" + self.grid_list[grid_name.split("/")[0]][self.grid_idx]
         except ValueError:
             print(f"No such image {grid_name} exists.")
-        self.grid_count = len(self.grid_list[self.img.split("/")[-2]])
+        self.grid_count = len(self.grid_list[grid_name.split("/")[0]])
 
     def update_mask(self,mask_name):
         try:
             self.get_images()
-            self.mask_idx = self.mask_list[self.img.split("/")[-2]].index(mask_name)
-            self.mask_img = self.mask_list[self.img.split("/")[-2]][self.mask_idx]
+            self.mask_idx = self.mask_list[mask_name.split("/")[0]].index(mask_name)
+            self.mask_img = "images/" + self.mask_list[mask_name.split("/")[0]][self.mask_idx]
         except ValueError:
             print(f"No such image {mask_name} exists.")
-        self.mask_count = len(self.mask_list[self.img.split("/")[-2]])
+        self.mask_count = len(self.mask_list[mask_name.split("/")[0]])
 
     def update_model(self,model_name):
         try:
@@ -232,7 +231,6 @@ def get_file(file_label = "image_file",file_path = "static/images", file_ext = [
             return render_template("sopia.html",data=data)
         if file and file.filename.split(".")[-1].lower() in file_ext:
             filename = secure_filename(file.filename)
-            print(filename, "yes")
             upload_folder = os.path.join(file_path,"uploads").replace("\\", "/")
             if (len(filename.split(".")) == 3):
                 upload_folder = os.path.join(upload_folder,filename.split(".")[1])
