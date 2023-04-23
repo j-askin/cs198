@@ -50,8 +50,8 @@
 				<hr>
 					<div class="element">
 						<select id="select_grid" class="select" name="grid" form="form_update_grid" required>
-							{% for grid_index in range(data.grid_list|length) %}
-							<option value={{grid_index}} {% if grid_index == data.grid_idx %} selected {% endif %} {% if grid_index == 0 %} disabled {% endif %} class="option">{% if grid_index == 0 %} Select Grid {%else%} {{grid_index}} {% endif %}</option>
+							{% for grid_index in range(data.grid_list[data.img.split('/')[-2]]|length) %}
+								<option value={{data.grid_list[data.img.split('/')[-2]][grid_index]}} {% if grid_index == data.grid_idx %} selected {% endif %} {% if grid_index == 0 %} disabled {% endif %} class="option">{% if grid_index == 0 %} Select Image {% else %} {{data.grid_list[data.img.split('/')[-2]][grid_index]}} {% endif %}</option>
 							{% endfor %}
 						</select>
 						<button type="submit" name="action", value="update_grid" class="button" form="form_update_grid">Update Grid</button>
@@ -60,8 +60,8 @@
 				<hr>
 					<div class="element">
 						<select id="select_mask" class="select" name="mask" form="form_update_mask" required>
-							{% for mask_index in range(data.mask_list|length) %}
-							<option value={{mask_index}} {% if mask_index == data.mask_idx %} selected {% endif %} {% if mask_index == 0 %} disabled {% endif %} class="option">{% if mask_index == 0 %} Select Mask {%else%} {{mask_index}} {% endif %}</option>
+							{% for mask_index in range(data.mask_list[data.img.split('/')[-2]]|length) %}
+								<option value={{data.mask_list[data.img.split('/')[-2]][mask_index]}} {% if mask_index == data.mask_idx %} selected {% endif %} {% if mask_index == 0 %} disabled {% endif %} class="option">{% if mask_index == 0 %} Select Mask {% else %} {{data.mask_list[data.img.split('/')[-2]][mask_index]}} {% endif %}</option>
 							{% endfor %}
 						</select>
 						<button type="submit" name="action", value="update_mask" class="button" form="form_update_mask">Update Mask</button>
@@ -115,25 +115,25 @@
 				<hr>
 					<div class="element">
 						<label for="upload_image" class="label">Image</label>
-						<input type="file" name="file" id="image_file" class="upload" form="form_upload_image" required>
+						<input type="file" name="image_file" id="image_file" class="upload" form="form_upload_image" required>
 						<button type="submit" name="upload_image" value="upload_image" class="button" form="form_upload_image">Upload Image</button>
 					</div>
 					<div class="element">
 						<label for="upload_grid" class="label">Grid</label>
-						<input type="file" id="grid_file" class="upload" form="form_upload_grid" required>
+						<input type="file" name="grid_file" id="grid_file" class="upload" form="form_upload_grid" required>
 						<button type="submit" name="upload_grid", value="upload_grid" class="button" form="form_upload_grid">Upload Grid</button>
 					</div>
 					<div class="element">
 						<label for="upload_mask" class="label">Mask</label>
-						<input type="file" id="mask_file" class="upload" form="form_upload_mask" required>
+						<input type="file" name="mask_file" id="mask_file" class="upload" form="form_upload_mask" required>
 						<button type="submit" name="upload_mask", value="upload_grid" class="button" form="form_upload_mask">Upload Mask</button>
 					</div>
 				<hr>
 					<div class="element">
 						<label for="upload_config" class="label">Config</label>
-						<input type="file" id="config_file" class="upload" form="form_upload_model" required>
+						<input type="file" name="config_file" id="config_file" class="upload" form="form_upload_model" required>
 						<label for="upload_path" class="label">Paths</label>
-						<input type="file" id="path_file" class="upload" form="form_upload_model" required>
+						<input type="file" name="path_file" id="path_file" class="upload" form="form_upload_model" required>
 						<button type="submit" name="upload_model", value="upload_model" class="button" form="form_upload_model">Upload Model</button>
 					</div>
 					
