@@ -60,7 +60,7 @@ class Data:
         self.image_idx, self.grid_idx, self.mask_idx = 0,0,0
         images_dir = os.path.join(self.root_dir,self.image_dir)
         if not os.path.exists(images_dir):
-            os.mkdir(images_dir)
+            os.makedirs(images_dir,exist_ok=True)
         for folder in os.listdir(images_dir):
             folder_dir = os.path.join(images_dir,folder)
             if os.path.isdir(folder_dir):
@@ -74,9 +74,9 @@ class Data:
                         grids_dir = os.path.join(folder_dir,"grid")
                         masks_dir = os.path.join(folder_dir,"mask")
                         if not os.path.exists(grids_dir):
-                            os.mkdir(grids_dir)
+                            os.makedirs(grids_dir,exist_ok=True)
                         if not os.path.exists(os.path.join(folder_dir,"mask")):
-                            os.mkdir(masks_dir)
+                            os.makedirs(masks_dir,exist_ok=True)
                         for grid in os.listdir(grids_dir):
                             if os.path.isfile(os.path.join(grids_dir,grid)) and os.path.splitext(grid)[1] == ".png" and os.path.splitext(os.path.splitext(grid)[0])[1] == ".grid":
                                 self.grid_list[folder].append(grid)
@@ -100,16 +100,14 @@ class Data:
         self.model_idx = 0
         models_dir = os.path.join(self.root_dir,self.model_dir)
         if not os.path.exists(models_dir):
-            os.mkdir(models_dir)
+            os.makedirs(models_dir,exist_ok=True)
         for folder in os.listdir(models_dir):
             folder_dir = os.path.join(models_dir,folder)
             if os.path.isdir(folder_dir):
+                print("Models present")
                 for file in os.listdir(folder_dir):
+                    print(file)
                     if ((os.path.splitext(file)[0]==folder) and (os.path.splitext(file)[1]==".pth") and os.path.isfile(os.path.splitext(os.path.join(folder_dir,file))[0]+".py")):
-                        #                               ^   I think this will return False everytime
-                        #                                   not sure if this is supposed to be "file" instead
-                        #                                   if it is, then change to "file"
-                        #                                   if it's supposed to be "folder", change this to os.path.split(os.path.split(file)[0])[1] == folder
                         self.model_list.append(os.path.relpath(os.path.join(folder_dir,file),self.model_dir).replace("\\","/"))
         self.model_list.sort()
         print("Models:")
@@ -117,24 +115,24 @@ class Data:
 
     #get paths for image files to display, assumes paths are correct
     def get_paths(self):
-            self.img = os.path.relpath(os.path.join(self.image_dir,self.image_list[self.image_idx]),self.template).replace("\\","/")
-            grids = self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]]
-            masks = self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]]
-            if (self.grid_idx >= len(grids)):
-                self.grid_idx = 0
-            if (self.mask_idx >= len(masks)):
-                self.mask_idx = 0
-            print("Models:")
-            print(self.model_list)
-            self.grid_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"grid",self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.grid_idx]),self.template).replace("\\","/")
-            self.mask_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"mask",self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.mask_idx]),self.template).replace("\\","/")
-            self.config = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".py").replace("\\","/")
-            self.pth = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".pth").replace("\\","/")
-            print(self.img)
-            print(self.grid_img)
-            print(self.mask_img)
-            print(self.config)
-            print(self.pth)
+        self.img = os.path.relpath(os.path.join(self.image_dir,self.image_list[self.image_idx]),self.template).replace("\\","/")
+        grids = self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]]
+        masks = self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]]
+        if (self.grid_idx >= len(grids)):
+            self.grid_idx = 0
+        if (self.mask_idx >= len(masks)):
+            self.mask_idx = 0
+        print("Models:")
+        print(self.model_list)
+        self.grid_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"grid",self.grid_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.grid_idx]),self.template).replace("\\","/")
+        self.mask_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"mask",self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.mask_idx]),self.template).replace("\\","/")
+        self.config = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".py").replace("\\","/")
+        self.pth = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".pth").replace("\\","/")
+        print(self.img)
+        print(self.grid_img)
+        print(self.mask_img)
+        print(self.config)
+        print(self.pth)
             
     def update_image(self,image_name):
         try:
@@ -144,6 +142,24 @@ class Data:
         except ValueError:
             print(f"No such image {image_name} exists.")
         self.image_count = len(self.image_list)
+
+    def update_grid(self,grid_name):
+        try:
+            self.get_images()
+            self.grid_idx = self.grid_list[self.img.split("/")[-2]].index(grid_name)
+            self.grid_img = self.grid_list[self.img.split("/")[-2]][self.image_idx]
+        except ValueError:
+            print(f"No such image {grid_name} exists.")
+        self.grid_count = len(self.grid_list[self.img.split("/")[-2]])
+
+    def update_mask(self,mask_name):
+        try:
+            self.get_images()
+            self.mask_idx = self.mask_list[self.img.split("/")[-2]].index(mask_name)
+            self.mask_img = self.mask_list[self.img.split("/")[-2]][self.mask_idx]
+        except ValueError:
+            print(f"No such image {mask_name} exists.")
+        self.mask_count = len(self.mask_list[self.img.split("/")[-2]])
 
     def update_model(self,model_name):
         try:
@@ -198,29 +214,53 @@ def debug_mes():
     app.logger.info(data.config)
     app.logger.info(data.pth)
 
-def get_file(file_label = "image_file",file_ext = ["png","jpg","jpeg"]):
-    file,file_name = "",""
-    if file_label not in request.files:
-        app.logger.info("No file detected.\n")
-    else:
-        file = request.files[file_label]
-        if file.filename=='':
-            app.logger.info("No file detected.\n")
-            if file and ('.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in file_ext):
-                file_name = os.path.split(secure_filename(file.filename))[1]
-                #remove mask and grid tags
-    return file, file_name
-
-
-
 @app.route("/")
 @app.route("/sopia/")
 def open_sopia():
     debug_mes()
     return render_template("sopia.html",data=data)
 
-'''
-        '''
+
+def get_file(file_label = "image_file",file_path = "static/images", file_ext = ["png","jpg","jpeg"]):
+    if file_label not in request.files:
+        flash(f'No file detected.')
+        return redirect(request.url)
+    else:
+        file = request.files[file_label]
+        if file.filename == '':
+            flash('No selected file')
+            return render_template("sopia.html",data=data)
+        if file and file.filename.split(".")[-1].lower() in file_ext:
+            filename = secure_filename(file.filename)
+            print(filename, "yes")
+            upload_folder = os.path.join(file_path,"uploads").replace("\\", "/")
+            if (len(filename.split(".")) == 3):
+                upload_folder = os.path.join(upload_folder,filename.split(".")[1])
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder,exist_ok=True)
+            file.save(os.path.join(upload_folder,filename))
+
+
+def get_model(config_label = "config_file",path_label = "path_file", model_path = "static/models"):
+    if config_label not in request.files:
+        flash(f'No config file detected.')
+        return redirect(request.url)
+    elif path_label not in request.files:
+        flash(f'No path file detected.')
+        return redirect(request.url)
+    else:
+        config_file,path_file = request.files[config_label],request.files[path_label]
+        if config_file.filename == '' or path_file.filename == '':
+            flash('No selected config or path file')
+            return render_template("sopia.html",data=data)
+        if config_file and config_file.filename.split(".")[-1].lower() == "py" and path_file and path_file.filename.split(".")[-1].lower() == "pth":
+            config_filename = secure_filename(config_file.filename)
+            path_filename = secure_filename(path_file.filename)
+            upload_folder = os.path.join(model_path,config_filename.split(".")[0])
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder,exist_ok=True)
+            config_file.save(os.path.join(upload_folder,config_filename))
+            path_file.save(os.path.join(upload_folder,path_filename))
 
 @app.route("/sopia/upload/",methods=['GET','POST'])
 def sopia_upload():
@@ -230,66 +270,23 @@ def sopia_upload():
     if request.method=="POST":
         match list(request.form.keys())[0]:
             case "upload_image":
-                # image_file,image_name = get_file("image_file",["png","jpg","jpeg"])
-                # if not (image_file in ["",None] or image_name in ["",None]):
-                #     #correct invalid file names
-                #     if os.splitext(image_name)[0][-5:] in [".grid",".mask"]:
-                #         image_name = os.splitext(image_name)[0][:-5]+os.splitext(image_name)[1]
-                #         if sopia.verify_path(data.image_dir,os.splitext(image_name)[0]):
-                #             image_file.save(os.path.join(data.image_dir,os.splitext(image_name)[0],image_name))
-                #             print(f"Saved image to {os.path.join(data.image_dir,os.splitext(image_name)[0],image_name)}")
-                #             app.logger.info(os.path.join(os.splitext(image_name)[0],image_name))
-                #             data.update_image(os.path.join(os.splitext(image_name)[0],image_name))
-                #             app.logger.info(data.image_idx)
-                # app.logger.info("Image upload")
-
-                #------------This section is a modified version of the code taken from ------------------
-                #------------ https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/ ----------
-                if 'file' not in request.files:
-                    flash('No file part')
-                    return redirect(request.url)
-                file = request.files['file']
-                # If the user does not select a file, the browser submits an
-                # empty file without a filename.
-                if file.filename == '':
-                    flash('No selected file')
-                    return render_template("sopia.html",data=data)
-                if file and file.filename.split(".")[-1] in ["png", "jpg", "jpeg"]:
-                    filename = secure_filename(file.filename)
-                    upload_folder = app.config['UPLOAD_FOLDER'] + "\\images\\uploads"
-                    if not os.path.exists(upload_folder):
-                        os.mkdir(upload_folder)
-                    file.save(os.path.join(upload_folder, filename))
-                #----------------------------------------------------------------------------------------
-
+                get_file('image_file',data.image_dir,["png","jpg","jpeg"])
+                app.logger.info("Image upload")
             case "upload_grid":
-                grid_file,grid_name = get_file("grid_file",["png"])
+                get_file('grid_file',data.image_dir,["png"])
                 app.logger.info("Grid upload")
             case "upload_mask":
-                mask_file,mask_name = get_file("mask_file",["png"])
+                get_file('mask_file',data.image_dir,["png"])
                 app.logger.info("Mask upload")
             case "upload_model":
-                config_file,config_name = get_file("config_file",["py"])
-                path_file,path_name = get_file("path_file",["pth"])
+                get_model('config_file','path_file')
                 app.logger.info("Model upload")
-                if not (config_file in ["",None] or config_name in ["",None] or path_file in ["",None] or path_name in ["",None]):
-                    path_name = os.splitext(config_name)[0]+".pth"
-                    if sopia.verify_path(data.model_dir):
-                        config_file.save(os.path.join(data.model_dir,os.splitext(config_name)[0],config_name))
-                        print(f"Saved config to {os.path.join(data.model_dir,os.splitext(config_name)[0],config_name)}")
-                        path_file.save(os.path.join(data.model_dir,os.splitext(config_name)[0],path_name))
-                        print(f"Saved paths to {os.path.join(data.model_dir,os.splitext(config_name)[0],path_name)}")
-                        app.logger.info(os.path.join(os.splitext(config_name)[0],config_name))
-                        data.update_model(os.path.join(os.splitext(config_name)[0],config_name))
-                        app.logger.info(data.model_idx)
-                        data.model = sopia.get_model(data.static,data.config,data.pth)
             case _:
                 app.logger.info("Invalid upload")
         data.get_images()
         data.get_models()
         data.get_paths()
     return render_template("sopia.html",data=data)
-
 
 @app.route("/sopia/update/",methods=['GET','POST'])
 def sopia_update():
@@ -306,12 +303,12 @@ def sopia_update():
             case "update_grid":
                 app.logger.info("Grid requested")
                 app.logger.info(request.form["grid"])
-                data.update_image(request.form["grid"])
+                data.update_grid(request.form["grid"])
                 app.logger.info(data.image_idx)
             case "update_mask":
                 app.logger.info("Mask requested")
                 app.logger.info(request.form["mask"])
-                data.update_image(request.form["mask"])
+                data.update_mask(request.form["mask"])
                 app.logger.info(data.image_idx)
             case "update_model":
                 app.logger.info("Model requested")
