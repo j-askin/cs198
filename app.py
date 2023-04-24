@@ -51,7 +51,7 @@ class Data:
         self.grid_idx = 0
         self.model_idx = 0
 
-        self.get_paths()
+        #self.get_paths()
 
     def get_images(self):
         self.image_list = [""]
@@ -128,6 +128,7 @@ class Data:
         self.mask_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"mask",self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.mask_idx]),self.template).replace("\\","/")
         self.config = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".py").replace("\\","/")
         self.pth = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".pth").replace("\\","/")
+        print("Image paths:")
         print(self.img)
         print(self.grid_img)
         print(self.mask_img)
@@ -328,6 +329,10 @@ def sopia_create():
     data.point_text = ""
     data.output_text = ""
     debug_mes()
+    app.logger.info("Create requested")
+    app.logger.info(data.image_list[data.image_idx])
+    app.logger.info(data.image_idx)
+    app.logger.info(data.image_list)
     if request.method=="POST":
         match request.form["action"]:
             case "create_mask":
@@ -349,14 +354,18 @@ def sopia_create():
                 grid_x = request.form["grid_x"]
                 grid_y = request.form["grid_y"]
                 #override image size and grid path with that of sample
-                if os.path.isfile(data.img):
-                    with Image.open(data.img) as im:
-                        grid_w,grid_l = im.size()
+                image = data.image_list[data.image_idx]
+                if os.path.isfile(image):
+                    with Image.open(image) as im:
+                        grid_w,grid_l = im.size
                 else:
                     grid_w = request.form["grid_w"]
                     grid_l = request.form["grid_l"]
-                grid_path = os.path.relpath(os.path.splitext(data.image_list[data.image_idx])[0]+"_grid.png",data.static).replace("\\","/")
-                data.grid_img,data.output_text = sopia.create_grid(data.root_dir,grid_path,row_count,col_count,row_space,col_space,grid_w,grid_l,grid_x,grid_y)
+                app.logger.info("Grid requested")
+                grid_img = os.path.split(data.image_list[data.image_idx])[0]+"/grid/"+"uploaded.grid.png"
+                app.logger.info(data.static)
+                app.logger.info(grid_img)
+                data.grid_img,data.output_text = sopia.create_grid(data.static,grid_img,row_count,col_count,row_space,col_space,grid_w,grid_l,grid_x,grid_y)
             case "create_points":
                 img = pt_rad = data.image_list[data.image_idx]
                 grid_img = os.path.splitext(data.image_list[data.image_idx])[0]+"_grid.png"
@@ -439,17 +448,19 @@ def sopia_update_model():
 def sopia_create_grid():
     print("Creating Grid!")
     sopia_create()
+    return render_template("sopia.html",data=data)
 
 @app.route("/sopia/create/mask/",methods=['GET','POST'])
 def sopia_create_mask():
     print("Creating Mask!")
     sopia_create()
+    return render_template("sopia.html",data=data)
 
 @app.route("/sopia/create/points/",methods=['GET','POST'])
 def sopia_create_points():
     print("Creating Points!")
     sopia_create()
-
+    return render_template("sopia.html",data=data)
 
 
 

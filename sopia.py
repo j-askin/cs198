@@ -8,24 +8,20 @@ def verify_path(dir_path=os.path.dirname(__file__),file_path=""):
     #prevent any access to directories outside the project folder
     abs_path = os.path.abspath(os.path.join(dir_path, file_path))
     print(abs_path)
-    print(os.path.join(os.pardir,os.path.dirname(__file__)))
     if not abs_path.lower().startswith(os.path.join(os.pardir,os.path.dirname(__file__)).lower()):
         print("Invalid directory.")
         return False
-    if not os.path.exists(os.path.dirname(abs_path)):
-        try:
-            os.mkdir(os.path.dirname(abs_path))
-            print("Directory added.")
-        except:
-            print("Invalid directory.")
-            return False
-    else:
+    try:
+        os.makedirs(os.path.dirname(abs_path),exist_ok=True)
         print("Directory exists.")
         return True
+    except:
+        print("Invalid directory.")
+        return False
 
 def verify_file(dir_path=os.path.dirname(__file__),file_path=""):
-    if verify_path(dir_path,file_path):
-        print(os.path.abspath(os.path.join(dir_path, file_path)))
+    if verify_path(dir_path,os.path.split(file_path)[0]):
+        print(os.path.join(dir_path, file_path))
         if os.path.isfile(os.path.abspath(os.path.join(dir_path, file_path))):
             return True
     return False
@@ -97,7 +93,7 @@ def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"),imag
             msg += f"Segmenting image {image}...\n"
             result = inference_model(model,image)
             mask_image = (os.path.splitext(image))[0]+"_mask.png"
-            out_path = os.path.abspath(os.path.join(dir_path, mask_image))
+            out_path = os.path.join(dir_path, mask_image)
             show_result_pyplot(model, image, result, opacity=1, show=show,out_file=out_path)
             if not verify_file(dir_path,mask_image):
                 msg += "Unable to load segmenter config.\n"
@@ -117,53 +113,45 @@ def str2int(string,default = 0):
     except:
         return default
 
-def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"),  row_count = 5,col_count = 5,row_space = 320,col_space = 200,grid_w = 1920, grid_l = 1200, grid_x = 320, grid_y = 200,grid_path = "grid.png"):
+def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_path = "grid.png", row_count = 5,col_count = 5,row_space = 320,col_space = 200,grid_w = 1920, grid_l = 1200, grid_x = 320, grid_y = 200):
     msg=""
     grid_image = ""
-    try:
-        if not grid_path.lower().endswith(".png"):
-            grid_path = grid_path+".png"
-        row_count = str2int(row_count,0)
-        row_space = str2int(row_space,0)
-        col_count = str2int(col_count,0)
-        col_space = str2int(col_space,0)
-        grid_w = str2int(grid_w,"")
-        grid_x = str2int(grid_x,0)
-        grid_l = str2int(grid_l,"")
-        grid_y = str2int(grid_y,0)
-        if "" in [grid_w,grid_l]:
-            msg += "Error: unknown grid image size.\n"
-            raise Exception
-        else:
-            grid_width = row_count + (row_count * row_space) - row_space
-            grid_height = col_count + (col_count * col_space) - col_space
-            grid = np.zeros((grid_l,grid_w,4))
-            print(row_space+1)
-            print(col_space+1)
-            for i in range(grid_l):
-                for j in range(grid_w):
-                    if i >= grid_y and i < grid_y+grid_height and j >= grid_x and j < grid_x+grid_width:
-                        if (i-grid_y)%(col_space+1) == 0 and (j-grid_x)%(row_space+1) == 0:
-                            grid[i,j]=(0,255,255,255)
-                        elif (i-grid_y)%(col_space+1) == 0:
-                            grid[i,j]=((255,0,255,255) if j%2 == 0 else (128,0,128,255))
-                        elif (j-grid_x)%(row_space+1) == 0:
-                            grid[i,j]=((255,255,0,255) if i%2 == 0 else (128,128,0,255))
-                        else:
-                            grid[i,j]=(0,0,0,0)
-            np.resize(grid,(grid_l,grid_w,4))
-            grid=Image.fromarray(grid.astype("uint8"),"RGBA")
-            grid_image=os.path.abspath(os.path.join(dir_path, grid_path))
-            grid.save(grid_image, "PNG")
-            if not verify_file(dir_path,grid_path):
-                msg += "Error: could not save grid.\n"
-                raise Exception
-            msg += f"Saved grid to {grid_path}\n"
-    except Exception as e:
-        grid_image = ""
-        msg += "Unable to generate grid: {e}\n"
-    finally:
-        return grid_image,msg
+    print(os.path.split(os.path.join(dir_path,grid_path))[0])
+
+
+    os.makedirs(os.path.split(os.path.join(dir_path,grid_path))[0],exist_ok=True)
+    if not grid_path.lower().endswith(".png"):
+        grid_path = grid_path+".png"
+    row_count = str2int(row_count,0)
+    row_space = str2int(row_space,0)
+    col_count = str2int(col_count,0)
+    col_space = str2int(col_space,0)
+    grid_w = str2int(grid_w,"")
+    grid_x = str2int(grid_x,0)
+    grid_l = str2int(grid_l,"")
+    grid_y = str2int(grid_y,0)
+    grid_width = row_count + (row_count * row_space) - row_space
+    grid_height = col_count + (col_count * col_space) - col_space
+    grid = np.zeros((grid_l,grid_w,4))
+    print(row_space+1)
+    print(col_space+1)
+    for i in range(grid_l):
+        for j in range(grid_w):
+            if i >= grid_y and i < grid_y+grid_height and j >= grid_x and j < grid_x+grid_width:
+                if (i-grid_y)%(col_space+1) == 0 and (j-grid_x)%(row_space+1) == 0:
+                    grid[i,j]=(0,255,255,255)
+                elif (i-grid_y)%(col_space+1) == 0:
+                    grid[i,j]=((255,0,255,255) if j%2 == 0 else (128,0,128,255))
+                elif (j-grid_x)%(row_space+1) == 0:
+                    grid[i,j]=((255,255,0,255) if i%2 == 0 else (128,128,0,255))
+                else:
+                    grid[i,j]=(0,0,0,0)
+    np.resize(grid,(grid_l,grid_w,4))
+    grid=Image.fromarray(grid.astype("uint8"),"RGBA")
+    grid_image=os.path.join(dir_path, grid_path)
+    grid.save(grid_image, "PNG")
+    msg += f"Saved grid to {grid_path}\n"
+    return grid_image,msg
 
 def classify_point(color = (0,0,0),model=None):
     try:
