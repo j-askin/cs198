@@ -6,8 +6,10 @@ from mmseg.apis import init_model, inference_model, show_result_pyplot
 
 def verify_path(dir_path=os.path.dirname(__file__),file_path=""):
     #prevent any access to directories outside the project folder
-    abs_path = os.path.abs_path(os.path.join(dir_path, file_path))
-    if not abs_path.startswith(os.path.join(os.pardir),os.path.dirname(__file__)):
+    abs_path = os.path.abspath(os.path.join(dir_path, file_path))
+    print(abs_path)
+    print(os.path.join(os.pardir,os.path.dirname(__file__)))
+    if not abs_path.lower().startswith(os.path.join(os.pardir,os.path.dirname(__file__)).lower()):
         print("Invalid directory.")
         return False
     if not os.path.exists(os.path.dirname(abs_path)):
@@ -19,10 +21,12 @@ def verify_path(dir_path=os.path.dirname(__file__),file_path=""):
             return False
     else:
         print("Directory exists.")
+        return True
 
 def verify_file(dir_path=os.path.dirname(__file__),file_path=""):
     if verify_path(dir_path,file_path):
-        if os.path.is_file(os.path.abs_path(os.path.join(dir_path, file_path))):
+        print(os.path.abspath(os.path.join(dir_path, file_path)))
+        if os.path.isfile(os.path.abspath(os.path.join(dir_path, file_path))):
             return True
     return False
 
@@ -93,7 +97,7 @@ def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"),imag
             msg += f"Segmenting image {image}...\n"
             result = inference_model(model,image)
             mask_image = (os.path.splitext(image))[0]+"_mask.png"
-            out_path = os.path.abs_path(os.path.join(dir_path, mask_image))
+            out_path = os.path.abspath(os.path.join(dir_path, mask_image))
             show_result_pyplot(model, image, result, opacity=1, show=show,out_file=out_path)
             if not verify_file(dir_path,mask_image):
                 msg += "Unable to load segmenter config.\n"
@@ -149,7 +153,7 @@ def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"),  row_
                             grid[i,j]=(0,0,0,0)
             np.resize(grid,(grid_l,grid_w,4))
             grid=Image.fromarray(grid.astype("uint8"),"RGBA")
-            grid_image=os.path.abs_path(os.path.join(dir_path, grid_path))
+            grid_image=os.path.abspath(os.path.join(dir_path, grid_path))
             grid.save(grid_image, "PNG")
             if not verify_file(dir_path,grid_path):
                 msg += "Error: could not save grid.\n"

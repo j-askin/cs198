@@ -6,7 +6,30 @@
 		<meta name="description" content="sopia project">
 		<meta name="author" content="miguel martinez">
 		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}">
-		<script src="{{url_for('static', filename='scripts.js')}}"></script>
+		<script>
+			function toggle_vis(check) {
+				if (check.checked==true) {
+					document.getElementById(check.value).style.visibility = "visible";
+				}
+				else {
+					document.getElementById(check.value).style.visibility = "hidden";
+				}
+			}
+			function slide_zoom(slide){
+				zoom = slide.value;
+				image_board.style.scale = zoom;
+			}
+			function slide_scroll(e){
+			    if(e.deltaY > 0){    
+					zoom += zoom_interval;
+				}
+				else{
+					zoom -= zoom_interval;
+				}
+				image_board.style.scale = zoom;
+				zoom_slider.value = zoom;
+			}
+		</script>
 		<style>
 			body {background: #E5E5E5;}
 		</style>
@@ -71,7 +94,7 @@
 					<div class="element">
 						<select id="select_model" class="select" name="model" form="form_update_model" required>
 							{% for model_index in range(data.model_list|length) %}
-							<option value={{model_index}} {% if model_index == data.model_idx %} selected {% endif %} {% if model_index == 0 %} disabled {% endif %} class="option">{% if model_index == 0 %} Select Model {%else%} {{data.model_list[model_index]}} {% endif %}</option>
+							<option value={{data.model_list[model_index]}} {% if model_index == data.model_idx %} selected {% endif %} {% if model_index == 0 %} disabled {% endif %} class="option">{% if model_index == 0 %} Select Model {%else%} {{data.model_list[model_index]}} {% endif %}</option>
 							{% endfor %}
 						</select>
 						<button type="submit" name="action", value="update_model" class="button" form="form_update_model" required>Update Model</button>
@@ -147,21 +170,21 @@
 				<div>
 				<div class="element">
 					<label for="image_check" class="label">Sample Image</label>
-					<input type="checkbox" id="image_check" class="check" value="image_display"></input>
+					<input type="checkbox" id="image_check" class="check" value="image_display" onclick=toggle_vis(this)></input>
 				</div>
 				<div class="element">
 					<label for="grid_check" class="label">Grid Mask</label>
-					<input type="checkbox" id="grid_check" class="check" value="grid_display"></input>
+					<input type="checkbox" id="grid_check" class="check" value="grid_display" onclick=toggle_vis(this)></input>
 				</div>
 				<div class="element">
 					<label for="mask_check" class="label">Segmented Mask</label>
-					<input type="checkbox" id="mask_check" class="check" value="mask_display"></input>
+					<input type="checkbox" id="mask_check" class="check" value="mask_display" onclick=toggle_vis(this)></input>
 				</div>
 				</div>
 				<div>
 				<div class="element">
 					<label for="zoom_slider" class="label">Zoom Level</label>
-					<input type="range" id="zoom_slider" class="slider" name="zoom_offset" min=1 max=10 value=1>
+					<input type="range" id="zoom_slider" class="slider" name="zoom_offset" min=1 max=10 value=1 oninput = slide_zoom(this)>
 				</div>
 
 				<div class="element">
@@ -178,9 +201,6 @@
 			</div>
 		</div>
 	</body>
-	<script>
-		
-	</script>
 </html>
 
 

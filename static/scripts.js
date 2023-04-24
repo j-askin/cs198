@@ -16,14 +16,7 @@ x_slider.style.display="block";
 y_slider.style.display="block";
 
 //image toggle function
-function toggle_vis(check) {
-    if (check.checked==true) {
-        document.getElementById(check.value).style.visibility = "visible";
-    }
-    else {
-        document.getElementById(check.value).style.visibility = "hidden";
-    }
-}
+
 image_check.onclick=toggle_vis(this);
 grid_check.onclick=toggle_vis(this);
 mask_check.onclick=toggle_vis(this);
@@ -44,10 +37,7 @@ document.addEventListener("wheel", function(e) {
 });
 
 //by slider
-function slide_zoom(slide){
-    zoom = slide.value;
-    image_board.style.scale = zoom;
-}
+
 zoom_slider.oninput = slide_zoom(this);
 
 /*

@@ -164,12 +164,13 @@ class Data:
 
 
     def update_model(self,model_name):
-        try:
             self.get_models()
+            print(self.model_list)
+            print(model_name)
             self.model_idx = self.model_list.index(model_name)
-        except ValueError:
-            print(f"No such model {model_name} exists.")
-        self.model_count = len(self.model_list)
+            self.config = "models/" + self.model_list[self.model_idx].split(".")[0] + ".py"
+            self.pth = "models/" + self.model_list[self.model_idx].split(".")[0] + ".pth"
+            self.model_count = len(self.model_list)
 
     def clear(self):
         if self.image_idx == 0: #clear all images in directory
@@ -330,7 +331,16 @@ def sopia_create():
     if request.method=="POST":
         match request.form["action"]:
             case "create_mask":
-                data.mask_img,data.output_text = sopia.segment_image(data.root_dir,data.image_list[data.image_idx],data.model)
+                config = "models/" + data.model_list[data.model_idx].split(".")[0] + ".py"
+                pth = "models/" + data.model_list[data.model_idx].split(".")[0] + ".pth"
+                app.logger.info("Mask requested")
+                app.logger.info(data.static)
+                app.logger.info(config)
+                app.logger.info(pth)
+                image = data.image_list[data.image_idx]
+                app.logger.info(image)
+                data.model = sopia.load_model(data.static,config,pth)
+                data.mask_img,data.output_text = sopia.segment_image(data.static,image,data.model)
             case "create_grid":
                 row_count = request.form["row_count"]
                 col_count = request.form["col_space"]
@@ -422,6 +432,7 @@ def sopia_update_mask():
 @app.route("/sopia/update/model/",methods=['GET','POST'])
 def sopia_update_model():
     print("Updating Model!")
+    sopia_update()
     return render_template("sopia.html",data=data)
 
 @app.route("/sopia/create/grid/",methods=['GET','POST'])
