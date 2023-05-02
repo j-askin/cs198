@@ -50,15 +50,109 @@
 		<form id="form_compare_points" class="form_action" action="{{url_for('sopia_compare_points')}}" method="post" enctype="multipart/form-data"></form>
 		<form id="form_clear" class="form_action" action="{{url_for('sopia_clear')}}" method="post" enctype="multipart/form-data"></form>
 		
-		<div class="main_window" id="main_window">
-			<div class="image_window" id="image_window">
+		<div class="main_window container" id="main_window">
+			<div class="image_window container_vert" id="image_window">
 				<div class="image_board" id="image_board">
 					<img src="{{url_for('static', filename=data.img)}}" id="image_display" class="image_display" alt ="sample image layer"></img>
 					<img src="{{url_for('static', filename=data.grid_img)}}" id="grid_display" class="grid_display" alt="grid image layer"></img>
 					<img src="{{url_for('static', filename=data.mask_img)}}" id="mask_display" class="mask_display" alt="segmented mask layer"></img>
 				</div>
+				<div class="image_setting_window" id="image_setting_window">
+					<hr>
+					<div class="container" style="justify-content: space-evenly;">
+						<div class="element container">
+							<div class="container" style="width: 20%; justify-content: center;">
+								<label for="upload_image" class="label">Image:</label>
+							</div>
+							<div class="container" style="width: 40%; justify-content: center;">
+								<input type="file" name="image_file" id="image_file" class="upload" form="form_upload_image" required>
+							</div>
+							<div class="container" style="width: 40%; justify-content: center;">
+								<button type="submit" name="upload_image" value="upload_image" class="button" form="form_upload_image">Upload Image</button>
+							</div>
+						</div>
+						<div class="element container">
+							<div class="container" style="width: 20%; justify-content: center;">
+								<label for="upload_grid" class="label">Grid:</label>
+							</div>
+							<div class="container" style="width: 40%; justify-content: center;">
+								<input type="file" name="grid_file" id="grid_file" class="upload" form="form_upload_grid" required>
+							</div>
+							<div class="container" style="width: 40%; justify-content: center;">
+								<button type="submit" name="upload_grid", value="upload_grid" class="button" form="form_upload_grid">Upload Grid</button>
+							</div>
+						</div>
+						<div class="element container">
+							<div class="container" style="width: 20%; justify-content: center;">
+								<label for="upload_mask" class="label">Mask:</label>
+							</div>
+							<div class="container" style="width: 40%; justify-content: center;">
+								<input type="file" name="mask_file" id="mask_file" class="upload" form="form_upload_mask" required>
+							</div>
+							<div class="container" style="width: 40%; justify-content: center;">
+								<button type="submit" name="upload_mask", value="upload_grid" class="button" form="form_upload_mask">Upload Mask</button>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class="container">
+						<div style="width: 80%;" class="element container">
+							<div style="width: 30%; justify-content: space-evenly;" class="element container">
+								<div class="container" style="width: 20%; justify-content: center;">
+									<label for="upload_config" class="label">Config:</label>
+								</div>
+								<div class="container" style="width: 50%; justify-content: center;">
+									<input type="file" name="config_file" id="config_file" class="upload" form="form_upload_model" required>
+								</div>
+							</div>
+							<div style="width: 45%; justify-content: space-evenly;" class="element container">
+								<div class="container" style="width: 20%; justify-content: center;">
+									<label for="upload_path" class="label">Paths:</label>
+								</div>
+								<div class="container" style="width: 35%; justify-content: center;">
+									<input type="file" name="path_file" id="path_file" class="upload" form="form_upload_model" required>
+								</div>
+								<div class="container" style="width: 30%; justify-content: center;">
+									<button type="submit" name="upload_model", value="upload_model" class="button" form="form_upload_model">Upload Model</button>
+								</div>
+							</div>
+						</div>
+						<div style="width: 20%;">
+							<button type="submit" name="action", value="clear_data" class="button" style="width: 150px;" form="form_clear">Clear Loaded Data</button>
+						</div>
+					</div>
+					<hr>
+					<div class="container">
+						<div style="width: 20%; justify-content: space-evenly;" class="element container">
+							<label for="image_check" class="label">Sample Image</label>
+							<input type="checkbox" id="image_check" class="check" value="image_display" onclick=toggle_vis(this)></input>
+						</div>
+						<div style="width: 20%; justify-content: space-evenly;" class="element container">
+							<label for="grid_check" class="label">Grid Mask</label>
+							<input type="checkbox" id="grid_check" class="check" value="grid_display" onclick=toggle_vis(this)></input>
+						</div>
+						<div style="width: 20%; justify-content: space-evenly;" class="element container">
+							<label for="mask_check" class="label">Segmented Mask</label>
+							<input type="checkbox" id="mask_check" class="check" value="mask_display" onclick=toggle_vis(this)></input>
+						</div>
+					</div>
+					<hr>
+					<div class="container">
+						<div style="width: 25%; justify-content: space-evenly;" class="element container">
+							<label for="zoom_slider" class="label">Zoom Level</label>
+							<input type="range" id="zoom_slider" class="slider" name="zoom_offset" min=1 max=10 value=1 oninput = slide_zoom(this)>
+						</div>
+						<div style="width: 25%; justify-content: space-evenly;" class="element container">
+							<label for="x_slider" class="label">X Offset</label>
+							<input type="range" id="x_slider" class="slider" name="zoom_offset" min=0 max=10 value=0>
+						</div>
+						<div style="width: 25%; justify-content: space-evenly;" class="element container">
+							<label for="y_slider" class="label">Y Offset</label>
+							<input type="range" id="y_slider" class="slider" name="zoom_offset" min=0 max=10 value=0>
+						</div>
+					</div>
+				</div>
 			</div>
-
 			<div class="options_window" id="options_window">
 				<div class="element">
 					<div class="element">
@@ -117,87 +211,23 @@
 				<hr>
 				<div class="element">
 					<input type="text" id="mask_name" name="mask_name" class="textinput" size=5 placeholder="Mask Name" form="form_create_mask" required></input>
-					<button type="submit" name="action", value="create_mask" class="button" form="form_create_mask">Segment Image</button>
+					<button type="submit" name="action", value="create_mask" style="width: 150px;" class="button" form="form_create_mask">Segment Image</button>
 				</div>
 				<hr>
 				<div class="element">
 					<input type="text" id="pt_rad" name="pt_rad" class="textinput" size=5 placeholder="Point Radius" form="form_create_points" required></input>
-					<button type="submit" name="action", value="get_points" class="button"  form="form_create_points">Get Grid Points</button>
+					<button type="submit" name="action", value="get_points" style="width: 150px;" class="button"  form="form_create_points">Get Grid Points</button>
 				</div>
 				<hr>
 				<div class="element">
-					<button type="submit" name="action", value="get_all_points" class="button"  form="form_compare_points">Compare Model Points</button>
+					<button type="submit" name="action", value="get_all_points" style="width: 150px;" class="button"  form="form_compare_points">Compare Model Points</button>
 				</div>
 
 			</div>
-
 			<div class="output_window" id="output_window">
 				<pre id="points_display" class="textdisplay" disabled=true>{{data.point_text}}</pre>
 				<hr>
 				<pre id="output_display" class="textdisplay" disabled=true>{{data.output_text}}</pre>
-				<hr>
-					<div class="element">
-						<label for="upload_image" class="label">Image</label>
-						<input type="file" name="image_file" id="image_file" class="upload" form="form_upload_image" required>
-						<button type="submit" name="upload_image" value="upload_image" class="button" form="form_upload_image">Upload Image</button>
-					</div>
-					<div class="element">
-						<label for="upload_grid" class="label">Grid</label>
-						<input type="file" name="grid_file" id="grid_file" class="upload" form="form_upload_grid" required>
-						<button type="submit" name="upload_grid", value="upload_grid" class="button" form="form_upload_grid">Upload Grid</button>
-					</div>
-					<div class="element">
-						<label for="upload_mask" class="label">Mask</label>
-						<input type="file" name="mask_file" id="mask_file" class="upload" form="form_upload_mask" required>
-						<button type="submit" name="upload_mask", value="upload_grid" class="button" form="form_upload_mask">Upload Mask</button>
-					</div>
-				<hr>
-					<div class="element">
-						<label for="upload_config" class="label">Config</label>
-						<input type="file" name="config_file" id="config_file" class="upload" form="form_upload_model" required>
-						<label for="upload_path" class="label">Paths</label>
-						<input type="file" name="path_file" id="path_file" class="upload" form="form_upload_model" required>
-						<button type="submit" name="upload_model", value="upload_model" class="button" form="form_upload_model">Upload Model</button>
-					</div>
-					
-				<hr>
-				<div>
-					<button type="submit" name="action", value="clear_data" class="button"  form="form_clear">Clear Loaded Data</button>
-				</div>
-				
-				<hr>
-				<div>
-				<div>
-				<div class="element">
-					<label for="image_check" class="label">Sample Image</label>
-					<input type="checkbox" id="image_check" class="check" value="image_display" onclick=toggle_vis(this)></input>
-				</div>
-				<div class="element">
-					<label for="grid_check" class="label">Grid Mask</label>
-					<input type="checkbox" id="grid_check" class="check" value="grid_display" onclick=toggle_vis(this)></input>
-				</div>
-				<div class="element">
-					<label for="mask_check" class="label">Segmented Mask</label>
-					<input type="checkbox" id="mask_check" class="check" value="mask_display" onclick=toggle_vis(this)></input>
-				</div>
-				</div>
-				<div>
-				<div class="element">
-					<label for="zoom_slider" class="label">Zoom Level</label>
-					<input type="range" id="zoom_slider" class="slider" name="zoom_offset" min=1 max=10 value=1 oninput = slide_zoom(this)>
-				</div>
-
-				<div class="element">
-					<label for="x_slider" class="label">X Offset</label>
-					<input type="range" id="x_slider" class="slider" name="zoom_offset" min=0 max=10 value=0>
-				</div>
-
-				<div class="element">
-					<label for="y_slider" class="label">Y Offset</label>
-					<input type="range" id="y_slider" class="slider" name="zoom_offset" min=0 max=10 value=0>
-				</div>
-				</div>
-				</div>
 			</div>
 		</div>
 	</body>
