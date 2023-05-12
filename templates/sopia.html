@@ -6,30 +6,6 @@
 		<meta name="description" content="sopia project">
 		<meta name="author" content="miguel martinez">
 		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}">
-		<script>
-			function toggle_vis(check) {
-				if (check.checked==true) {
-					document.getElementById(check.value).style.visibility = "visible";
-				}
-				else {
-					document.getElementById(check.value).style.visibility = "hidden";
-				}
-			}
-			function slide_zoom(slide){
-				zoom = slide.value;
-				image_board.style.scale = zoom;
-			}
-			function slide_scroll(e){
-			    if(e.deltaY > 0){    
-					zoom += zoom_interval;
-				}
-				else{
-					zoom -= zoom_interval;
-				}
-				image_board.style.scale = zoom;
-				zoom_slider.value = zoom;
-			}
-		</script>
 		<style>
 			body {background: #E5E5E5;}
 		</style>
@@ -135,22 +111,12 @@
 							<label for="mask_check" class="label">Segmented Mask</label>
 							<input type="checkbox" id="mask_check" class="check" value="mask_display" onclick=toggle_vis(this)></input>
 						</div>
-					</div>
-					<hr>
-					<div class="container">
 						<div style="width: 25%; justify-content: space-evenly;" class="element container">
 							<label for="zoom_slider" class="label">Zoom Level</label>
 							<input type="range" id="zoom_slider" class="slider" name="zoom_offset" min=1 max=10 value=1 oninput = slide_zoom(this)>
 						</div>
-						<div style="width: 25%; justify-content: space-evenly;" class="element container">
-							<label for="x_slider" class="label">X Offset</label>
-							<input type="range" id="x_slider" class="slider" name="zoom_offset" min=0 max=10 value=0>
-						</div>
-						<div style="width: 25%; justify-content: space-evenly;" class="element container">
-							<label for="y_slider" class="label">Y Offset</label>
-							<input type="range" id="y_slider" class="slider" name="zoom_offset" min=0 max=10 value=0>
-						</div>
 					</div>
+					<hr>
 				</div>
 			</div>
 			<div class="options_window" id="options_window">
@@ -231,6 +197,68 @@
 			</div>
 		</div>
 	</body>
+	<script>
+		dragElement(document.getElementById("image_board"));
+		function toggle_vis(check) {
+			if (check.checked==true) {
+				document.getElementById(check.value).style.visibility = "visible";
+			}
+			else {
+				document.getElementById(check.value).style.visibility = "hidden";
+			}
+		}
+		function slide_zoom(slide){
+			zoom = slide.value;
+			image_board.style.transformOrigin = "top left";
+			image_board.style.scale = 1 + ((zoom - 1) / 5);
+			image_board.style.top = "0px";
+			image_board.style.left = "0px";
+		}
+		function slide_scroll(e){
+			if(e.deltaY > 0){    
+				zoom += zoom_interval;
+			}
+			else{
+				zoom -= zoom_interval;
+			}
+			image_board.style.scale = zoom;
+			zoom_slider.value = zoom;
+		}
+		function dragElement(elmnt) {
+			var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+			elmnt.onmousedown = dragMouseDown;
+
+			function dragMouseDown(e) {
+				e = e || window.event;
+				e.preventDefault();
+				// get the mouse cursor position at startup:
+				pos3 = e.clientX;
+				pos4 = e.clientY;
+				document.onmouseup = closeDragElement;
+				// call a function whenever the cursor moves:
+				document.onmousemove = elementDrag;
+			}
+
+			function elementDrag(e) {
+				e = e || window.event;
+				e.preventDefault();
+				// calculate the new cursor position:
+				pos1 = pos3 - e.clientX;
+				pos2 = pos4 - e.clientY;
+				pos3 = e.clientX;
+				pos4 = e.clientY;
+				// set the element's new position:
+				elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+				elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+			}
+
+			function closeDragElement() {
+				// stop moving when mouse button is released:
+				document.onmouseup = null;
+				document.onmousemove = null;
+			}
+		}
+	</script>
 </html>
 
 
