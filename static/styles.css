@@ -1,23 +1,26 @@
 .main_window {
-  background-color:rgba(56, 53, 55, 0.8); height:100%; width:100%; min-height:850px; position:absolute; z-index:0; display:block;
+  background-color:rgb(75, 35, 35); height:100%; width:100%; min-height:850px; min-width: 1550px; position:absolute; z-index:0; display:block;
 }
 .image_window {
-  background-color:rgba(198, 43, 43, 0.8); height:100%; width:60%; min-height:850px; min-width:420px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
+  background-color:rgba(75, 35, 35); height:100%; width:60%; min-height:850px; min-width:420px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
 }
 .options_window {
-  background-color:rgba(29, 179, 114, 0.8); height:100%; width:20%; min-height:850px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
+  background-color:rgba(75, 35, 35); height:100%; width:19%; min-height:850px; padding-left: 10px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
 }
 .output_window {
-  background-color:rgba(49, 40, 178, 0.8); height:100%; width:20%; min-height:850px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
+  background-color:rgba(75, 35, 35); height:100%; width: 19%; min-height:850px; position:relative; z-index:1; display:inline; float:left;object-fit:contain; 
 }
 
 .image_board {
-  background-color:rgba(166, 220, 30, 0.1); height:70%; width:100%; opacity:1.0; border: 1px; z-index:99; object-fit:contain; 
+  background-color:rgba(75, 35, 35); height:70%; width:100%; opacity:1.0; z-index:99; object-fit:contain; 
 }
 
 #image_board {
-  position:absolute;
   cursor: grab;
+}
+
+#image_board_move {
+  position:absolute;
 }
 
 .image_display {
@@ -42,7 +45,7 @@
 }
 
 .label {
-  color: rgba(0, 0, 0, 1); position:relative; font-family:Inter; text-align:center; font-size:16px; letter-spacing:0;z-index:2; 
+  color: rgb(255, 255, 255); position:relative; font-family: "Monaco", monospace; text-align:center; font-size:16px; letter-spacing:0;z-index:2; 
 }
 .textdisplay {
   color:rgba(0, 0, 0, 1); background-color: rgba(255, 255, 255,1); width:220px; height:35px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0;z-index:2; 
@@ -86,5 +89,5 @@
 }
 
 .image_setting_window {
-  background-color:rgba(49, 40, 178, 0.8); height:30%; width:100%; min-width:420px; position:relative; top: 70%; z-index:99; display:inline; float:left; object-fit:contain; 
+  background-color:rgba(75, 35, 35); height:30%; width:100%; min-width:420px; position:relative; z-index:99; display:inline; float:left; object-fit:contain; 
 }

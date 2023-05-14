@@ -56,16 +56,16 @@ def load_model(dir_path=os.path.join(os.path.dirname(__file__),"models"),config_
     msg = ""
     cfg, pth, model = "", "", ""
     try:
-        msg += f"Attempting to load segmenter config {os.path.join(os.path.dirname(__file__),config_path)}\n"
+        msg += f"Attempting to load segmenter config {os.path.join(dir_path,config_path)}\n"
         if not verify_file(dir_path,config_path):
             msg += "Unable to load segmenter config.\n"
             raise Exception
-        cfg = os.path.join(os.path.dirname(__file__),config_path)
-        msg += f"Attempting to load segmenter path {os.path.join(os.path.dirname(__file__),pth_path)}\n"
+        cfg = os.path.join(dir_path,config_path)
+        msg += f"Attempting to load segmenter path {os.path.join(dir_path,pth_path)}\n"
         if not verify_file(dir_path,pth_path):
             msg += "Unable to load segmenter path.\n"
             raise Exception
-        pth = os.path.join(os.path.dirname(__file__),pth_path)
+        pth = os.path.join(dir_path,pth_path)
         msg += "Loading segmentation model...\n"
         try:
             model = init_model(cfg, pth, device='cuda:0')
@@ -76,9 +76,9 @@ def load_model(dir_path=os.path.join(os.path.dirname(__file__),"models"),config_
     except Exception as e:
         msg += f"Unable to load model: {e}\n"
     finally:
-        return cfg,pth,model,msg
+        return model
 
-def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"),image = "", model = "",mask_path = "mask.png", show=False):
+def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"),image = "", model = None, mask_path = "mask.png", show=False):
     msg = ""
     mask_image = ""
     out_path = ""
@@ -86,15 +86,16 @@ def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"),imag
         if not verify_file(dir_path,image):
             msg += "Please load an image first.\n"
             raise Exception
-        elif model in ["",None]:
+        elif model == None:
             msg += "Please load a model first.\n"
             raise Exception
         else:
             msg += f"Segmenting image {image}...\n"
-            result = inference_model(model,image)
-            mask_image = (os.path.splitext(image))[0]+"_mask.png"
+            img_name = os.path.join(dir_path, image)
+            result = inference_model(model, img_name)
+            mask_image = os.path.join(os.path.split(image)[0], "mask/") + (os.path.splitext(os.path.split(image)[1]))[0] + ".mask.png"
             out_path = os.path.join(dir_path, mask_image)
-            show_result_pyplot(model, image, result, opacity=1, show=show,out_file=out_path)
+            show_result_pyplot(model=model, img=img_name, result=result, opacity=1.0, show=show,out_file=out_path)
             if not verify_file(dir_path,mask_image):
                 msg += "Unable to load segmenter config.\n"
                 raise Exception
@@ -126,10 +127,10 @@ def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_
     row_space = str2int(row_space,0)
     col_count = str2int(col_count,0)
     col_space = str2int(col_space,0)
-    grid_w = str2int(grid_w,"")
+    grid_w = str2int(string=grid_w)
     grid_x = str2int(grid_x,0)
-    grid_l = str2int(grid_l,"")
-    grid_y = str2int(grid_y,0)
+    grid_l = str2int(string=grid_l)
+    grid_y = str2int(string=grid_y)
     grid_width = row_count + (row_count * row_space) - row_space
     grid_height = col_count + (col_count * col_space) - col_space
     grid = np.zeros((grid_l,grid_w,4))
