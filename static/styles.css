@@ -27,7 +27,7 @@
   background-color:rgba(255, 255, 255, 1);max-height:100%; max-width:100%;position:absolute; opacity:1.0; border:1px; background-repeat:no-repeat; z-index:3; 
 }
 .grid_display {
-  background-color:rgba(255, 255, 255, 1); max-height:100%; max-width:100%; position:absolute; opacity:0.7; border:1px; background-repeat:no-repeat; z-index:4;
+  background-color:rgba(255, 255, 255, 0); max-height:100%; max-width:100%; position:absolute; opacity:0.7; border:1px; background-repeat:no-repeat; z-index:4;
 }
 .mask_display {
   background-color:rgba(255, 255, 255, 1);max-height:100%; max-width:100%; position:absolute; opacity:0.3; border:1px; background-repeat:no-repeat; z-index:5;

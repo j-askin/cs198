@@ -114,7 +114,9 @@ def str2int(string,default = 0):
     except:
         return default
 
-def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_path = "grid.png", row_count = 5,col_count = 5,row_space = 320,col_space = 200,grid_w = 1920, grid_l = 1200, grid_x = 320, grid_y = 200):
+def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_path = "grid.png",
+                row_count = 5, col_count = 5, row_space = 320, col_space = 200,
+                grid_w = 1920, grid_l = 1200, grid_x = 320, grid_y = 200):
     msg=""
     grid_image = ""
     print(os.path.split(os.path.join(dir_path,grid_path))[0])
@@ -123,21 +125,21 @@ def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_
     os.makedirs(os.path.split(os.path.join(dir_path,grid_path))[0],exist_ok=True)
     if not grid_path.lower().endswith(".png"):
         grid_path = grid_path+".png"
-    row_count = str2int(row_count,0)
-    row_space = str2int(row_space,0)
-    col_count = str2int(col_count,0)
-    col_space = str2int(col_space,0)
-    grid_w = str2int(string=grid_w)
-    grid_x = str2int(grid_x,0)
-    grid_l = str2int(string=grid_l)
-    grid_y = str2int(string=grid_y)
-    grid_width = row_count + (row_count * row_space) - row_space
-    grid_height = col_count + (col_count * col_space) - col_space
-    grid = np.zeros((grid_l,grid_w,4))
+    row_count = str2int(row_count,5)
+    row_space = str2int(row_space,320)
+    col_count = str2int(col_count,5)
+    col_space = str2int(col_space,200)
+    grid_w = str2int(string=grid_w, default=1920)
+    grid_x = str2int(grid_x,320)
+    grid_l = str2int(string=grid_l, default=1200)
+    grid_y = str2int(string=grid_y, default=200)
+    grid_height = row_count + (row_count * row_space) - row_space
+    grid_width = col_count + (col_count * col_space) - col_space
+    grid = np.zeros((grid_height,grid_width,4))
     print(row_space+1)
     print(col_space+1)
-    for i in range(grid_l):
-        for j in range(grid_w):
+    for i in range(grid_height):
+        for j in range(grid_width):
             if i >= grid_y and i < grid_y+grid_height and j >= grid_x and j < grid_x+grid_width:
                 if (i-grid_y)%(col_space+1) == 0 and (j-grid_x)%(row_space+1) == 0:
                     grid[i,j]=(0,255,255,255)

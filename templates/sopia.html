@@ -44,7 +44,7 @@
 				<div class="image_setting_window" id="image_setting_window">
 					<hr>
 					<div class="container" style="justify-content: space-evenly;">
-						<div class="element container">
+						<div class="element container" style="width: 30%;">
 							<div class="container" style="width: 20%; justify-content: center;">
 								<label for="upload_image" class="label">Image:</label>
 							</div>
@@ -55,52 +55,31 @@
 								<button type="submit" name="upload_image" value="upload_image" class="button" form="form_upload_image">Upload Image</button>
 							</div>
 						</div>
-						<div class="element container">
-							<div class="container" style="width: 20%; justify-content: center;">
-								<label for="upload_grid" class="label">Grid:</label>
-							</div>
-							<div class="container" style="width: 40%; justify-content: center;">
-								<input type="file" name="grid_file" id="grid_file" class="upload" form="form_upload_grid" required>
-							</div>
-							<div class="container" style="width: 40%; justify-content: center;">
-								<button type="submit" name="upload_grid", value="upload_grid" class="button" form="form_upload_grid">Upload Grid</button>
-							</div>
-						</div>
-						<div class="element container">
-							<div class="container" style="width: 20%; justify-content: center;">
-								<label for="upload_mask" class="label">Mask:</label>
-							</div>
-							<div class="container" style="width: 40%; justify-content: center;">
-								<input type="file" name="mask_file" id="mask_file" class="upload" form="form_upload_mask" required>
-							</div>
-							<div class="container" style="width: 40%; justify-content: center;">
-								<button type="submit" name="upload_mask", value="upload_grid" class="button" form="form_upload_mask">Upload Mask</button>
-							</div>
-						</div>
-					</div>
-					<hr>
-					<div class="container">
-						<div style="width: 60%;" class="element container">
-							<div style="width: 30%; justify-content: space-evenly;" class="element container">
-								<div class="container" style="width: 20%; justify-content: center;">
-									<label for="upload_config" class="label">Config:</label>
+						<div class="element container" style="width: 60%; justify-content: right;">
+							<div class="element container" style="width: 40%; justify-content: right;">
+								<div class="container" style="width: 30%; justify-content: center;">
+									<label for="upload_grid" class="label">Config:</label>
 								</div>
-								<div class="container" style="width: 50%; justify-content: center;">
+								<div class="container" style="width: 40%; justify-content: center;">
 									<input type="file" name="config_file" id="config_file" class="upload" form="form_upload_model" required>
 								</div>
 							</div>
-							<div style="width: 45%; justify-content: space-evenly;" class="element container">
-								<div class="container" style="width: 20%; justify-content: center;">
-									<label for="upload_path" class="label">Paths:</label>
-								</div>
-								<div class="container" style="width: 35%; justify-content: center;">
-									<input type="file" name="path_file" id="path_file" class="upload" form="form_upload_model" required>
+							<div class="element container" style="width: 5%;"></div>
+							<div class="element container" style="width: 50%;">
+								<div class="container" style="width: 30%; justify-content: center;">
+									<label for="upload_mask" class="label">Weights:</label>
 								</div>
 								<div class="container" style="width: 30%; justify-content: center;">
+									<input type="file" name="path_file" id="path_file" class="upload" form="form_upload_model" required>
+								</div>
+								<div class="container" style="width: 40%; justify-content: center;">
 									<button type="submit" name="upload_model", value="upload_model" class="button" form="form_upload_model">Upload Model</button>
 								</div>
 							</div>
 						</div>
+					</div>
+					<hr>
+					<div class="container" style="justify-content: right;">
 						<div style="width: 20%;">
 							<button type="submit" name="action", value="clear_data" class="button" style="width: 150px;" form="form_clear">Clear Loaded Data</button>
 						</div>
@@ -122,9 +101,9 @@
 							<label for="mask_check" class="label">Segmented Mask</label>
 							<input type="checkbox" id="mask_check" class="check" value="mask_display" onclick=toggle_vis(this)></input>
 						</div>
-						<div style="width: 25%; justify-content: space-evenly;" class="element container">
+						<div style="width: 35%; justify-content: right;" class="element container">
 							<label for="zoom_slider" class="label">Zoom Level</label>
-							<input type="range" id="zoom_slider" class="slider" name="zoom_offset" min=1 max=10 value=1 oninput = slide_zoom(this)>
+							<input type="range" id="zoom_slider" class="slider" name="zoom_offset" min=1 max=100 value=1 oninput = slide_zoom(this)>
 						</div>
 					</div>
 					<hr>
@@ -216,7 +195,7 @@
 		function slide_zoom(slide){
 			zoom = slide.value;
 			image_board.style.transformOrigin = "top left";
-			image_board.style.scale = 1 + ((zoom - 1) / 5);
+			image_board.style.scale = 1 + ((zoom - 1) / 25);
 			image_board.style.top = "0px";
 			image_board.style.left = "0px";
 		}

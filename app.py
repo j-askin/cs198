@@ -347,8 +347,9 @@ def sopia_create():
                 data.model = sopia.load_model(data.static,config,pth)
                 data.mask_img,data.output_text = sopia.segment_image(data.static,image,data.model)
             case "create_grid":
+                print("test xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
                 row_count = request.form["row_count"]
-                col_count = request.form["col_space"]
+                col_count = request.form["col_count"]
                 row_space = request.form["row_space"]
                 col_space = request.form["col_space"]
                 grid_x = request.form["grid_x"]
@@ -361,8 +362,9 @@ def sopia_create():
                 else:
                     grid_w = request.form["grid_w"]
                     grid_l = request.form["grid_l"]
+                grid_name = request.form["grid_name"]
                 app.logger.info("Grid requested")
-                grid_img = os.path.split(data.image_list[data.image_idx])[0]+"/grid/"+"uploaded.grid.png"
+                grid_img = os.path.split(data.image_list[data.image_idx])[0]+"/grid/"+grid_name+".grid.png"
                 app.logger.info(data.static)
                 app.logger.info(grid_img)
                 data.grid_img,data.output_text = sopia.create_grid(data.static,grid_img,row_count,col_count,row_space,col_space,grid_w,grid_l,grid_x,grid_y)
