@@ -33,13 +33,6 @@
   background-color:rgba(255, 255, 255, 1);max-height:100%; max-width:100%; position:absolute; opacity:0.3; border:1px; background-repeat:no-repeat; z-index:5;
 }
 
-.points_display {
-  background-color:rgba(0, 255, 255, 0.9); width:310px; height:400px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0; z-index:2;
-}
-.output_display {
-  background-color:rgba(255, 255, 0, 0.9); width:310px; height:70px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0; z-index:2; 
-}
-
 .element{
   display:block;
 }
@@ -47,8 +40,14 @@
 .label {
   color: rgb(255, 255, 255); position:relative; font-family: "Monaco", monospace; text-align:center; font-size:16px; letter-spacing:0;z-index:2; 
 }
+.points_display {
+  color:rgba(0, 0, 0, 1); background-color: rgba(255, 255, 255,1); width:95%; min-width:310px; height:30%; min-height:200px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0; z-index:2; overflow-y: scroll; white-space: pre-wrap;
+}
+.output_display {
+  color:rgba(0, 0, 0, 1); background-color: rgba(255, 255, 255,1); width:95%; min-width:310px; height:20%; min-height:70px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0; z-index:2; overflow-y: scroll; white-space: pre-wrap;
+}
 .textdisplay {
-  color:rgba(0, 0, 0, 1); background-color: rgba(255, 255, 255,1); width:220px; height:35px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0;z-index:2; 
+  color:rgba(0, 0, 0, 1); background-color: rgba(255, 255, 255,1); width:95%; min-width:310px; height:5%; min-height:10px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0 ;z-index:2; overflow-y: scroll; white-space: pre-wrap;
 }
 .button {
   margin: 0px; border: 0px; padding: 0px; background-color:rgba(255, 255, 255, 0.5); width:100px; height:30px; position:relative; z-index:2; 
