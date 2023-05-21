@@ -217,8 +217,6 @@ def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_
     msg=""
     grid_image = ""
     print(os.path.split(os.path.join(dir_path,grid_path))[0])
-
-
     os.makedirs(os.path.split(os.path.join(dir_path,grid_path))[0],exist_ok=True)
     if not grid_path.lower().endswith(".png"):
         grid_path = grid_path+".png"
@@ -232,21 +230,18 @@ def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_
     grid_y = str2int(string=grid_y, default=200)
     grid_height = row_count + (row_count * row_space) - row_space
     grid_width = col_count + (col_count * col_space) - col_space
-    grid = np.zeros((grid_height,grid_width,4))
-    print(row_space+1)
-    print(col_space+1)
-    for i in range(grid_height):
-        for j in range(grid_width):
-            if i >= grid_y and i < grid_y+grid_height and j >= grid_x and j < grid_x+grid_width:
-                if (i-grid_y)%(col_space+1) == 0 and (j-grid_x)%(row_space+1) == 0:
-                    grid[i,j]=(0,255,255,255)
-                elif (i-grid_y)%(col_space+1) == 0:
-                    grid[i,j]=((255,0,255,255) if j%2 == 0 else (128,0,128,255))
-                elif (j-grid_x)%(row_space+1) == 0:
-                    grid[i,j]=((255,255,0,255) if i%2 == 0 else (128,128,0,255))
+    grid = np.zeros((grid_l,grid_w,4))
+    for j in range(grid_l):
+        for i in range(grid_w):
+            if j >= grid_y and j < grid_y+grid_height and i >= grid_x and i < grid_x+grid_width:
+                if (j-grid_y)%(col_space+1) == 0 and (i-grid_x)%(row_space+1) == 0:
+                    grid[j,i]=(0,255,255,255)
+                elif (j-grid_y)%(col_space+1) == 0:
+                    grid[j,i]=((255,0,255,255) if j%2 == 0 else (128,0,128,255))
+                elif (i-grid_x)%(row_space+1) == 0:
+                    grid[j,i]=((255,255,0,255) if i%2 == 0 else (128,128,0,255))
                 else:
-                    grid[i,j]=(0,0,0,0)
-    np.resize(grid,(grid_l,grid_w,4))
+                    grid[j,i]=(0,0,0,0)
     grid=Image.fromarray(grid.astype("uint8"),"RGBA")
     grid_image=os.path.join(dir_path, grid_path)
     grid.save(grid_image, "PNG")

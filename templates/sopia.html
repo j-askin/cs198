@@ -26,7 +26,7 @@
 		<form id="form_update_model" class="form_action" action="{{url_for('sopia_update_model')}}" method="post" enctype="multipart/form-data"></form>
 		<form id="form_create_grid" class="form_action" action="{{url_for('sopia_create_grid')}}" method="post" enctype="multipart/form-data"></form>
 		<form id="form_create_mask" class="form_action" action="{{url_for('sopia_create_mask')}}" method="post" enctype="multipart/form-data"></form>
-		<form id="form_create_mask" class="form_action" action="{{url_for('sopia_create_points')}}" method="post" enctype="multipart/form-data"></form>
+		<form id="form_create_points" class="form_action" action="{{url_for('sopia_create_points')}}" method="post" enctype="multipart/form-data"></form>
 		<form id="form_compare_points" class="form_action" action="{{url_for('sopia_compare_points')}}" method="post" enctype="multipart/form-data"></form>
 		<form id="form_update_point" class="form_action" action="{{url_for('sopia_update_point')}}" method="post" enctype="multipart/form-data"></form>
 		<form id="form_save_points" class="form_action" action="{{url_for('sopia_save_points')}}" method="post" enctype="multipart/form-data"></form>
@@ -83,10 +83,10 @@
 					<hr>
 					<div class="container" style="justify-content: right;">
 						<div style="width: 20%;">
-							<button type="submit" name="action", value="clear_data" class="button" style="width: 150px;" form="form_clear">Clear Loaded Data</button>
+							<button type="submit" name="action" value="clear_data" class="button" style="width: 150px;" form="form_clear">Clear Loaded Data</button>
 						</div>
 						<div style="width: 20%;">
-							<button type="submit" name="action", value="create_mask" style="width: 150px;" class="button" form="form_create_mask">Segment Image</button>
+							<button type="submit" name="action" value="create_mask" style="width: 150px;" class="button" form="form_create_mask">Segment Image</button>
 						</div>
 					</div>
 					<hr>
@@ -119,7 +119,7 @@
 								<option value={{data.image_list[image_index]}} {% if image_index == data.image_idx %} selected {% endif %} {% if image_index == 0 %} disabled {% endif %} class="option">{% if image_index == 0 %} Select Image {%else%} {{data.image_list[image_index]}} {% endif %}</option>
 							{% endfor %}
 						</select>
-						<button type="submit" name="action", value="update_image" class="button" form="form_update_image">Update Image</button>
+						<button type="submit" name="action" value="update_image" class="button" form="form_update_image">Update Image</button>
 					</div>
 
 				<hr>
@@ -129,7 +129,7 @@
 								<option value={{data.grid_list[data.img.split('/')[-2]][grid_index]}} {% if grid_index == data.grid_idx %} selected {% endif %} {% if grid_index == 0 %} disabled {% endif %} class="option">{% if grid_index == 0 %} Select Image {% else %} {{data.grid_list[data.img.split('/')[-2]][grid_index]}} {% endif %}</option>
 							{% endfor %}
 						</select>
-						<button type="submit" name="action", value="update_grid" class="button" form="form_update_grid">Update Grid</button>
+						<button type="submit" name="action" value="update_grid" class="button" form="form_update_grid">Update Grid</button>
 					</div>
 
 				<hr>
@@ -149,7 +149,7 @@
 							<option value={{data.model_list[model_index]}} {% if model_index == data.model_idx %} selected {% endif %} {% if model_index == 0 %} disabled {% endif %} class="option">{% if model_index == 0 %} Select Model {%else%} {{data.model_list[model_index]}} {% endif %}</option>
 							{% endfor %}
 						</select>
-						<button type="submit" name="action", value="update_model" class="button" form="form_update_model" required>Update Model</button>
+						<button type="submit" name="action" value="update_model" class="button" form="form_update_model" required>Update Model</button>
 					</div>
 				</div>
 				
@@ -164,15 +164,15 @@
 					<input type="text" id="grid_x" name="grid_x" class="textinput" size=5 placeholder="Grid X Position" form="form_create_grid" required></input>
 					<input type="text" id="grid_y" name="grid_y" class="textinput" size=5 placeholder="Grid Y Position" form="form_create_grid" required></input>
 					<input type="text" id="grid_name" name="grid_name" class="textinput" size=5 placeholder="Grid Name" form="form_create_grid" required></input>
-					<button type="submit" name="action", value="create_grid" class="button" form="form_create_grid">Create Grid</button>
+					<button type="submit" name="action" value="create_grid" class="button" form="form_create_grid">Create Grid</button>
 				</div>
 				<hr>
 				<div class="element">
-					<button type="submit" name="action", value="get_points" style="width: 150px;" class="button"  form="form_create_points">Get Grid Points</button>
+					<button type="submit" name="action" value="get_points" style="width: 150px;" class="button"  form="form_create_points">Get Grid Points</button>
 				</div>
 				<hr>
 				<div class="element">
-					<button type="submit" name="action", value="get_all_points" style="width: 150px;" class="button"  form="form_compare_points">Compare Model Points</button>
+					<button type="submit" name="action" value="get_all_points" style="width: 150px;" class="button"  form="form_compare_points">Compare Model Points</button>
 				</div>
 
 			</div>
@@ -184,15 +184,15 @@
 				<div class="element">
 					<input type="number" id="pt_y" name="pt_y" class="textinput" size=5 placeholder="Point Column" form="form_update_point" required></input>
 					<input type="number" id="pt_x" name="pt_x" class="textinput" size=5 placeholder="Point Row" form="form_update_point" required></input>
-					<select id="select_ptclass" class="select" name="mask" form="form_update_point" required>
-					<option value="UNKNOWN MATERIAL" selected class="option">"UNKNOWN MATERIAL"</option>
-							{% for class_index in range(data.classes|length) %}
-								<option value={{data.classes[class_index]}} class="option">{{data.classes[class_index]}}</option>
-							{% endfor %}
-						</select>
-					<button type="submit" name="action", value="update_point" style="width: 150px;" class="button" form="form_update_point">Update Point Class</button>
+					<select id="select_ptclass" class="select" name="pt_class" form="form_update_point" required>
+						<option value="UNKNOWN MATERIAL" selected class="option">"UNKNOWN MATERIAL"</option>
+						{% for class_index in range(data.classes|length) %}
+							<option value={{data.classes[class_index]}} class="option">{{data.classes[class_index]}}</option>
+						{% endfor %}
+					</select>
+					<button type="submit" name="action" value="update_point" style="width: 150px;" class="button" form="form_update_point">Update Point Class</button>
 				</div>
-					<button type="submit" name="action", value="save_points" style="width: 150px;" class="button" form="form_save_points">Save Point Classes</button>
+					<button type="submit" name="action" value="save_points" style="width: 150px;" class="button" form="form_save_points">Save Point Classes</button>
 				</div>
 			</div>
 		</div>
