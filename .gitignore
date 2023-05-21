@@ -2,3 +2,4 @@ mmsegmentation/
 static/images/
 static/models/
 static/points/
+static/save/
