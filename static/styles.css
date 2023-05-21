@@ -48,10 +48,10 @@
   color: rgb(255, 255, 255); position:relative; font-family: "Monaco", monospace; text-align:center; font-size:16px; letter-spacing:0;z-index:2; 
 }
 .textdisplay {
-  color:rgba(0, 0, 0, 1); background-color: rgba(255, 255, 255,1); width:220px; height:35px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0;z-index:2; 
+  color:rgba(0, 0, 0, 1); background-color: rgba(255, 255, 255,1); width:220px; height:35px; position:relative; font-family:Inter; text-align:left; font-size:12px; letter-spacing:0;z-index:2; white-space: pre-wrap; overflow-y: scroll; overflow-wrap: break-word;
 }
 .button {
-  margin: 0px; border: 0px; padding: 0px; background-color:rgba(255, 255, 255, 0.5); width:100px; height:30px; position:relative; z-index:2; 
+  margin: 0px; border: 0px; padding: 0px; background-color:rgba(255, 255, 255, 0.5); width:100px; height:30px; position:relative; z-index:2; cursor: pointer;
 }
 
 .select {

@@ -153,12 +153,6 @@
 					</div>
 				</div>
 				<hr>
-				<pre id="image_name_text" class="textdisplay" disabled=true>Loaded image:{{data.img}}</pre>
-				<pre id="grid_name_text" class="textdisplay" disabled=true>Loaded grid image:{{data.grid_img}}</pre>
-				<pre id="mask_name_text" class="textdisplay" disabled=true>Loaded mask image:{{data.mask_img}}</pre>
-				<pre id="model_cfg_name_text" class="textdisplay" disabled=true>Loaded model config:{{data.config}}</pre>
-				<pre id="model_pth_name_text" class="textdisplay" disabled=true>Loaded model path:{{data.pth}}</pre>
-				<hr>
 				<div class="element">
 					<input type="number" id="row_count" name="row_count" class="textinput" size=5 placeholder="# Of Rows" form="form_create_grid" required></input>
 					<input type="number" id="col_count" name="col_count" class="textinput" size=5 placeholder="# Of Columns" form="form_create_grid" required></input>
@@ -182,14 +176,14 @@
 
 			</div>
 			<div class="output_window" id="output_window">
-				<pre id="points_display" class="textdisplay" disabled=true>{{data.point_text}}</pre>
+				<pre style="height: 100px;" id="points_display" class="textdisplay" disabled=true>{{data.point_text}}</pre>
 				<hr>
 				<pre id="output_display" class="textdisplay" disabled=true>{{data.output_text}}</pre>
 				<hr>
 				<div class="element">
 					<input type="number" id="pt_y" name="pt_y" class="textinput" size=5 placeholder="Point Column" form="form_update_point" required></input>
 					<input type="number" id="pt_x" name="pt_x" class="textinput" size=5 placeholder="Point Row" form="form_update_point" required></input>
-					<select id="select_ptclass" class="select" name="pt_class" form="form_update_point" required>
+					<select style="width: 200px;" id="select_ptclass" class="select" name="pt_class" form="form_update_point" required>
 						<option value="UNKNOWN MATERIAL" selected class="option">"UNKNOWN MATERIAL"</option>
 						{% for class_index in range(data.point_classes|length) %}
 							<option value={{data.point_classes[class_index]}} class="option">{{data.point_classes[class_index]}}</option>
@@ -197,8 +191,15 @@
 					</select>
 					<button type="submit" name="action" value="update_point" style="width: 150px;" class="button" form="form_update_point">Update Point Class</button>
 				</div>
+				<div>
 					<button type="submit" name="action" value="save_points" style="width: 150px;" class="button" form="form_save_points">Save Point Classes</button>
 				</div>
+				<hr>
+				<pre style="height: 50px;" id="image_name_text" class="textdisplay" disabled=true>Loaded image: {{data.img}}</pre>
+				<pre style="height: 50px;" id="grid_name_text" class="textdisplay" disabled=true>Loaded grid image: {{data.grid_img}}</pre>
+				<pre style="height: 50px;" id="mask_name_text" class="textdisplay" disabled=true>Loaded mask image: {{data.mask_img}}</pre>
+				<pre style="height: 50px;" id="model_cfg_name_text" class="textdisplay" disabled=true>Loaded model config: {{data.config}}</pre>
+				<pre style="height: 50px;" id="model_pth_name_text" class="textdisplay" disabled=true>Loaded model path: {{data.pth}}</pre>
 			</div>
 		</div>
 	</body>
@@ -264,6 +265,17 @@
 				document.onmousemove = null;
 			}
 		}
+		const container = document.getElementById("image_board_move");
+		const image1 = document.getElementById("image_display");
+		const image2 = document.getElementById("grid_display");
+		
+		const containerWidth = container.clientWidth;
+		const image1Width = image1.naturalWidth;
+		
+		const scalingFactor = containerWidth / image1Width;
+		
+		image2.style.width = `${image2.naturalWidth * scalingFactor}px`;
+		image2.style.visibility = "visible";
 	</script>
 </html>
 

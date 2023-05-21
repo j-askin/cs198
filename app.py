@@ -58,7 +58,7 @@ class Data:
         self.image_list = [""]
         self.grid_list = {"":[""]}
         self.mask_list = {"":[""]}
-        self.image_idx, self.grid_idx, self.mask_idx = 0,0,0
+        self.image_idx, self.grid_idx, self.mask_idx = self.image_idx, self.grid_idx, self.mask_idx
         images_dir = os.path.join(self.root_dir,self.image_dir)
         if not os.path.exists(images_dir):
             os.makedirs(images_dir,exist_ok=True)
@@ -98,7 +98,7 @@ class Data:
 
     def get_models(self):
         self.model_list = [""]
-        self.model_idx = 0
+        self.model_idx = self.model_idx
         models_dir = os.path.join(self.root_dir,self.model_dir)
         if not os.path.exists(models_dir):
             os.makedirs(models_dir,exist_ok=True)
