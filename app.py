@@ -188,6 +188,7 @@ class Data:
         self.get_images()
         self.get_models()
         self.point_text, self.output_text = "",""
+        self.points = sopia.Points()
 
     def get_scale(self):
         pass
@@ -374,7 +375,7 @@ def sopia_create():
                 mask_img = os.path.splitext(data.image_list[data.image_idx])[0]+"_mask.png"
                 data.image_list[data.image_idx]
                 data.points,data.output_text = sopia.get_points(data.root_dir,img,grid_img,mask_img,data.model,pt_rad)
-                data.point_text = data.points.save_points()
+                data.point_text = data.points.save_points(data.static,"save")
             case _:
                 print("Invalid create")
     data.get_paths()
@@ -387,6 +388,31 @@ def sopia_compare_points():
     print("Comparing Points!")
     debug_mes()
     return render_template("sopia.html",data=data)
+
+@app.route("/sopia/update/point",methods=['GET','POST'])
+def sopia_update_point():
+    print("Updating Point!")
+    debug_mes()
+    if request.method=="POST":
+        match request.form["action"]:
+            case "update_point":
+                pt_x = request.form["pt_x"]
+                pt_y = request.form["pt_x"]
+                pt_class = request.form["pt_class"]
+                data.output_text = data.points.update_point(pt_x,pt_y,pt_class)
+                data.point_text = data.points.save_points(data.static,"save")
+            case _:
+                print("Invalid action!")
+    return render_template("sopia.html",data=data)
+
+@app.route("/sopia/save/points",methods=['GET','POST'])
+def sopia_save_points():
+    print("Saving Points To Text!")
+    debug_mes()
+    data.point_text = data.points.save_points(data.static,"save",True,50)
+    return render_template("sopia.html",data=data)
+
+
 
 @app.route("/sopia/clear/",methods=['GET','POST'])
 def sopia_clear():

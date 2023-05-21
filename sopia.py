@@ -11,17 +11,18 @@ class Points:
         print(v_lines)
         self.image = image
         self.mask = mask
-        self.classes = list(zip(classes,palette))
-        self.points = np.zeros((len(self.v_lines),len(self.h_lines),3)) #stores the point colors
+        self.classes = classes
+        self.palette = palette
+        self.points = np.zeros((len(self.v_lines),len(self.h_lines),3),np.uint8) #stores the point colors
         self.point_class = [["" for i in range(len(self.h_lines))] for j in range(len(self.v_lines))] #stores the point classes
         print(self.point_class)
         print(self.points[:,:,0])
         for v in range(len(self.v_lines)):
             for h in range(len(self.h_lines)):
                 self.points[v,h] = self.mask[self.v_lines[v],self.h_lines[h]][::-1]
-                self.point_class[v][h] = self.classify_point(v,h)[0]
+                self.point_class[v][h] = self.classify_point(v,h)
 
-    def save_points(self,dir_path=os.path.dirname(__file__),save_path="",log=False,pt_rad=0):
+    def save_points(self,dir_path=os.path.dirname(__file__),save_path="save",log=False,pt_rad=0):
         logfile = ""
         if True:#try:
             save_path = os.path.join(save_path,f"{time.strftime('%m%y%d-%H%M%S',time.localtime(time.time()))}")
@@ -35,16 +36,14 @@ class Points:
                 if not(verify_path(dir_path,pt_path) and verify_path(dir_path,pt_mask_path)):
                     logfile="Error: unable to save results to file\n"
                     raise Exception
-                circle_mask = np.zeros((pt_rad*2,pt_rad*2,3), np.uint8)
-                cv2.circle(circle_mask, (pt_rad,pt_rad),pt_rad,(1,1,1),thickness = -1)
                 print(self.image.shape)
                 image_overlay = np.zeros(self.image.shape, np.uint8)
                 image_overlay = cv2.cvtColor(image_overlay, cv2.COLOR_BGR2BGRA)
-                image_overlay[:,:,3] = 255
+                image_overlay[:,:] = [127,127,127,255]
                 print(image_overlay)
                 mask_overlay = np.zeros(self.mask.shape, np.uint8)
                 mask_overlay = cv2.cvtColor(image_overlay, cv2.COLOR_BGR2BGRA)
-                mask_overlay[:,:,3] = 255
+                mask_overlay[:,:] = [127,127,127,255]
                 print(mask_overlay)
             class_count = []
             logfile += "Sample Coordinates:\n"
@@ -54,9 +53,10 @@ class Points:
                     logfile += f"{self.points[v,h]} => {self.point_class[v][h]}\n"
                     class_count.append(self.point_class[v][h])
                     if pt_rad > 0:
-                        r1,r2,r3,r4 =(self.h_lines[h]-pt_rad),(self.h_lines[h]+pt_rad),(self.v_lines[v]-pt_rad),(self.v_lines[v]+pt_rad)
+                        r1,r2,r3,r4 =max(self.h_lines[h]-pt_rad,0),min(self.h_lines[h]+pt_rad,image_overlay.shape[1]-1),max(self.v_lines[v]-pt_rad,0),min(self.v_lines[v]+pt_rad,image_overlay.shape[0]-1)
                         image_overlay[r3:r4,r1:r2,:3] = self.image[r3:r4,r1:r2]
                         mask_overlay[r3:r4,r1:r2,:3] = self.points[v,h]
+            mask_overlay = cv2.cvtColor(mask_overlay, cv2.COLOR_RGBA2BGRA)
             if pt_rad > 0:
                 cv2.imwrite(os.path.join(dir_path,save_path,"image_overlay.png"),image_overlay)
                 cv2.imwrite(os.path.join(dir_path,save_path,"mask_overlay.png"),mask_overlay)
@@ -75,21 +75,31 @@ class Points:
 
     def classify_point(self,y,x):
         try:
-            for material in self.classes:
-                if tuple(self.points[y,x,:3]) == tuple(material[1]):
-                    return material
+            for i in range(len(self.classes)):
+                if tuple(self.points[y,x,:3]) == tuple(self.palette[i]):
+                    return self.classes[i]
             return "UNKNOWN MATERIAL"
         except:
             return "NO MATCH"
     
-    def change_point(self,y,x,new_class):
+    def update_point(self,y,x,new_class):
+        msg = ""
         try:
-            for material in self.classes:
-                if new_class == material[0]:
-                    self.point_class[y][x] = material[0]
+            if (y >= len(self.classes) or y < 0 or x >= len(self.classes) or x < 0):
+                msg += "Point is out of bounds."
+                return msg
+            for i in range(len(self.classes)):
+                if new_class == self.classes[i]:
+                    msg += (f"Changed point ({x},{y}) class from {self.point_class[y][x]} to {self.classes[i]}")
+                    self.point_class[y][x] = self.classes[i]
+                    return msg
+            msg += (f"Changed point ({x},{y}) class from {self.point_class[y][x]} to UNKNOWN MATERIAL")
             self.point_class[y][x] = "UNKNOWN MATERIAL"
+            return msg
         except:
+            msg += (f"Changed point ({x},{y}) class from {self.point_class[y][x]} to NO MATCH")
             self.point_class[y][x] = "NO MATCH"
+            return msg
 
 def verify_path(dir_path=os.path.dirname(__file__),file_path=""):
     #prevent any access to directories outside the project folder

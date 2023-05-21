@@ -28,6 +28,8 @@
 		<form id="form_create_mask" class="form_action" action="{{url_for('sopia_create_mask')}}" method="post" enctype="multipart/form-data"></form>
 		<form id="form_create_mask" class="form_action" action="{{url_for('sopia_create_points')}}" method="post" enctype="multipart/form-data"></form>
 		<form id="form_compare_points" class="form_action" action="{{url_for('sopia_compare_points')}}" method="post" enctype="multipart/form-data"></form>
+		<form id="form_update_point" class="form_action" action="{{url_for('sopia_update_point')}}" method="post" enctype="multipart/form-data"></form>
+		<form id="form_save_points" class="form_action" action="{{url_for('sopia_save_points')}}" method="post" enctype="multipart/form-data"></form>
 		<form id="form_clear" class="form_action" action="{{url_for('sopia_clear')}}" method="post" enctype="multipart/form-data"></form>
 		
 		<div style="background-color: rgba(75, 35, 35); position: relative; height: 5px; width: 3000px; z-index: 1000;"></div>
@@ -166,7 +168,6 @@
 				</div>
 				<hr>
 				<div class="element">
-					<input type="text" id="pt_rad" name="pt_rad" class="textinput" size=5 placeholder="Point Radius" form="form_create_points" required></input>
 					<button type="submit" name="action", value="get_points" style="width: 150px;" class="button"  form="form_create_points">Get Grid Points</button>
 				</div>
 				<hr>
@@ -179,6 +180,20 @@
 				<pre id="points_display" class="textdisplay" disabled=true>{{data.point_text}}</pre>
 				<hr>
 				<pre id="output_display" class="textdisplay" disabled=true>{{data.output_text}}</pre>
+				<hr>
+				<div class="element">
+					<input type="number" id="pt_y" name="pt_y" class="textinput" size=5 placeholder="Point Column" form="form_update_point" required></input>
+					<input type="number" id="pt_x" name="pt_x" class="textinput" size=5 placeholder="Point Row" form="form_update_point" required></input>
+					<select id="select_ptclass" class="select" name="mask" form="form_update_point" required>
+					<option value="UNKNOWN MATERIAL" selected class="option">"UNKNOWN MATERIAL"</option>
+							{% for class_index in range(data.classes|length) %}
+								<option value={{data.classes[class_index]}} class="option">{{data.classes[class_index]}}</option>
+							{% endfor %}
+						</select>
+					<button type="submit" name="action", value="update_point" style="width: 150px;" class="button" form="form_update_point">Update Point Class</button>
+				</div>
+					<button type="submit" name="action", value="save_points" style="width: 150px;" class="button" form="form_save_points">Save Point Classes</button>
+				</div>
 			</div>
 		</div>
 	</body>
