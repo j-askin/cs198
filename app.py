@@ -29,7 +29,7 @@ class Data:
         self.image_list, self.grid_list, self.mask_list, self.model_list = [""],{"":[""]},{"":[""]},[""] #contains relative paths to directories. First entry is always empty.
         self.model = "" #contains currently loaded model
         self.point_text, self.output_text = "","" #text to be displayed in output boxes
-
+        self.points = sopia.Points() #list of points
         #image data
         self.img_w,self.img_l = 0,0
 
@@ -373,7 +373,8 @@ def sopia_create():
                 grid_img = os.path.splitext(data.image_list[data.image_idx])[0]+"_grid.png"
                 mask_img = os.path.splitext(data.image_list[data.image_idx])[0]+"_mask.png"
                 data.image_list[data.image_idx]
-                data.point_text,data.output_text = sopia.get_points(data.root_dir,img,grid_img,mask_img,data.model,pt_rad)
+                data.points,data.output_text = sopia.get_points(data.root_dir,img,grid_img,mask_img,data.model,pt_rad)
+                data.point_text = data.points.save_points()
             case _:
                 print("Invalid create")
     data.get_paths()

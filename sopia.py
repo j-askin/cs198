@@ -3,6 +3,93 @@ from PIL import Image
 import numpy as np
 import mmcv
 from mmseg.apis import init_model, inference_model, show_result_pyplot
+class Points:
+    def __init__(self,h_lines = [],v_lines = [],image = [],mask = [],classes = [],palette = []):
+        self.h_lines = h_lines
+        self.v_lines = v_lines
+        print(h_lines)
+        print(v_lines)
+        self.image = image
+        self.mask = mask
+        self.classes = list(zip(classes,palette))
+        self.points = np.zeros((len(self.v_lines),len(self.h_lines),3)) #stores the point colors
+        self.point_class = [["" for i in range(len(self.h_lines))] for j in range(len(self.v_lines))] #stores the point classes
+        print(self.point_class)
+        print(self.points[:,:,0])
+        for v in range(len(self.v_lines)):
+            for h in range(len(self.h_lines)):
+                self.points[v,h] = self.mask[self.v_lines[v],self.h_lines[h]][::-1]
+                self.point_class[v][h] = self.classify_point(v,h)[0]
+
+    def save_points(self,dir_path=os.path.dirname(__file__),save_path="",log=False,pt_rad=0):
+        logfile = ""
+        if True:#try:
+            save_path = os.path.join(save_path,f"{time.strftime('%m%y%d-%H%M%S',time.localtime(time.time()))}")
+            if (log or pt_rad>0):
+                if not verify_path(dir_path,save_path):
+                    logfile="Error: unable to save results to file\n"
+                    raise Exception
+            if pt_rad > 0:
+                pt_path = os.path.join(save_path,"sample_points")
+                pt_mask_path = os.path.join(save_path,"mask_points")
+                if not(verify_path(dir_path,pt_path) and verify_path(dir_path,pt_mask_path)):
+                    logfile="Error: unable to save results to file\n"
+                    raise Exception
+                circle_mask = np.zeros((pt_rad*2,pt_rad*2,3), np.uint8)
+                cv2.circle(circle_mask, (pt_rad,pt_rad),pt_rad,(1,1,1),thickness = -1)
+                print(self.image.shape)
+                image_overlay = np.zeros(self.image.shape, np.uint8)
+                image_overlay = cv2.cvtColor(image_overlay, cv2.COLOR_BGR2BGRA)
+                image_overlay[:,:,3] = 255
+                print(image_overlay)
+                mask_overlay = np.zeros(self.mask.shape, np.uint8)
+                mask_overlay = cv2.cvtColor(image_overlay, cv2.COLOR_BGR2BGRA)
+                mask_overlay[:,:,3] = 255
+                print(mask_overlay)
+            class_count = []
+            logfile += "Sample Coordinates:\n"
+            for v in range(len(self.v_lines)):
+                for h in range(len(self.h_lines)):
+                    logfile += f"Point ({h}, {v}) ({self.h_lines[h]}, {self.v_lines[v]})\n"
+                    logfile += f"{self.points[v,h]} => {self.point_class[v][h]}\n"
+                    class_count.append(self.point_class[v][h])
+                    if pt_rad > 0:
+                        r1,r2,r3,r4 =(self.h_lines[h]-pt_rad),(self.h_lines[h]+pt_rad),(self.v_lines[v]-pt_rad),(self.v_lines[v]+pt_rad)
+                        image_overlay[r3:r4,r1:r2,:3] = self.image[r3:r4,r1:r2]
+                        mask_overlay[r3:r4,r1:r2,:3] = self.points[v,h]
+            if pt_rad > 0:
+                cv2.imwrite(os.path.join(dir_path,save_path,"image_overlay.png"),image_overlay)
+                cv2.imwrite(os.path.join(dir_path,save_path,"mask_overlay.png"),mask_overlay)
+                cv2.imwrite(os.path.join(dir_path,save_path,"image.png"),self.image)
+                cv2.imwrite(os.path.join(dir_path,save_path,"mask.png"),self.mask)
+            class_types = list(set(class_count))
+            class_types.sort()
+            for class_type in class_types:
+                logfile += f"{class_type}: {round(class_count.count(class_type)*100/len(class_count),3)}%\n"
+            if log:
+                with open(f"{os.path.join(dir_path,save_path)}/coordinates.txt", "w+") as f:
+                    f.write(logfile)
+        #except:
+            #logfile = "Unable to get points.\n"
+        return logfile
+
+    def classify_point(self,y,x):
+        try:
+            for material in self.classes:
+                if tuple(self.points[y,x,:3]) == tuple(material[1]):
+                    return material
+            return "UNKNOWN MATERIAL"
+        except:
+            return "NO MATCH"
+    
+    def change_point(self,y,x,new_class):
+        try:
+            for material in self.classes:
+                if new_class == material[0]:
+                    self.point_class[y][x] = material[0]
+            self.point_class[y][x] = "UNKNOWN MATERIAL"
+        except:
+            self.point_class[y][x] = "NO MATCH"
 
 def verify_path(dir_path=os.path.dirname(__file__),file_path=""):
     #prevent any access to directories outside the project folder
@@ -156,53 +243,32 @@ def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_
     msg += f"Saved grid to {grid_path}\n"
     return grid_image,msg
 
-def classify_point(color = (0,0,0),model=None):
-    try:
-        materials = list(zip(model.CLASSES,model.PALETTE))
-        for material in materials:
-            if tuple(color) == tuple(material[1]):
-                return material[0]
-        return "UNKNOWN MATERIAL"
-    except:
-        return "NO MATCH"
-
-def get_points(dir_path=os.path.join(os.path.dirname(__file__),"images"),image="",grid_image="",mask_image="",model="",pt_rad=25,save_path="save",timestamp=True):
+def get_points(dir_path=os.path.join(os.path.dirname(__file__),"images"),image_path="",grid_path="",mask_path="",model="",save_path="save",timestamp=True):
     msg = ""
-    coords = ""
-    pt_mode = True
-    try:
-        if timestamp:
-            save_path = os.path.join(save_path,f"{time.strftime('%m%y%d-%H%M%S',time.localtime(time.time()))}")
-        pt_path = os.path.join(save_path,"sample_points")
-        pt_mask_path = os.path.join(save_path,"mask_points")
-        if not (verify_path(dir_path,save_path) and verify_path(dir_path,pt_path) and verify_path(dir_path,pt_mask_path)):
-            msg+="Error: unable to save results\n"
-            raise Exception
-        pt_rad = str2int(pt_rad,1)
+    if True:#try:
         #verify images
-        if verify_file(dir_path,image):
-            cv_image = cv2.imread(image)
+        if verify_file(dir_path,image_path):
+            cv_image = cv2.imread(os.path.join(dir_path,image_path))
         else:
             msg += "No image found.\n"
-            raise Exception
-        if verify_file(dir_path,grid_image):
-            cv_grid_image = cv2.imread(grid_image)
+            #raise Exception
+        if verify_file(dir_path,grid_path):
+            cv_grid_image = cv2.imread(os.path.join(dir_path,grid_path))
         else:
             msg += "No grid image found.\n"
-            raise Exception
-        if verify_file(dir_path,mask_image):
-            cv_mask_image = cv2.imread(mask_image)
+            #raise Exception
+        if verify_file(dir_path,mask_path):
+            cv_mask_image = cv2.imread(os.path.join(dir_path,mask_path))
         else:
-            pt_mode = False
-            msg += "No segmented mask image found. Proceeding without point identification.\n"
+            msg += "No segmented mask image found.\n"
+            #raise Exception
         if model in ["",None]:
-            pt_mode = False
             msg += "No model loaded. Proceeding without point identification. \n"
-
+            #raise Exception
 
         image_l,image_w = cv_image.shape[0],cv_image.shape[1]
         cv_graygrid_image = cv2.cvtColor(cv_grid_image,cv2.COLOR_BGR2GRAY)
-
+        cv2.imwrite(os.path.join(dir_path,"gridgray.png"),cv_graygrid_image)
         #Hough transform: obtain coordinates of grid intersections
         lines = cv2.HoughLines(cv_graygrid_image, 1, np.pi/180, 500)
         h_lines, v_lines = [],[]
@@ -226,47 +292,13 @@ def get_points(dir_path=os.path.join(os.path.dirname(__file__),"images"),image="
         #verify that all points are within the image.
         if h_lines[-1] >= image_w and v_lines[-1] >= image_l:
             msg += "Grid image does not fit inside sample image.\n"
-            raise Exception
+            #raise Exception
 
-        #Output all coordinates
-        class_count = []
-        blank_mask = np.zeros((pt_rad*2,pt_rad*2,3), np.uint8)
-        cv2.circle(blank_mask, (pt_rad,pt_rad),pt_rad,(255,255,255),thickness = -1)
-        coords += "Sample Coordinates:\n"
-        for h in range(len(h_lines)):
-            for v in range(len(v_lines)):
-                r1,r2,r3,r4 =(h_lines[h]-pt_rad),(h_lines[h]+pt_rad),(v_lines[v]-pt_rad),(v_lines[v]+pt_rad)
-                #cv2.circle(cv_grid_image, (h_lines[h],v_lines[v]),pt_rad,(0,255,0),thickness = 2)
-                coords += f"({h}, {v})  ({h_lines[h]}, {v_lines[v]})"
-                image_point = cv2.cvtColor(cv_image[r3:r4,r1:r2], cv2.COLOR_BGR2BGRA)
-                image_point[:,:,3] = blank_mask[:,:,0]
-                cv2.imwrite(os.path.join(pt_path,f"{os.path.split(image)[1].split('.')[0]}_({h},{v})_{h_lines[h]}_{v_lines[v]}_50.png"),image_point)
-                if pt_mode:
-                    color = cv_mask_image[v_lines[v],h_lines[h]][::-1]
-                    coords += f" - ({color})"
-                    mask_point = cv2.cvtColor(cv_mask_image[r3:r4,r1:r2], cv2.COLOR_BGR2BGRA)
-                    mask_point[:,:,3] = blank_mask[:,:,0]
-                    cv2.imwrite(os.path.join(pt_mask_path,f"{os.path.split(image)[1].split('.')[0]}_({h},{v})_{h_lines[h]}_{v_lines[v]}_50.png"),mask_point)
-                    result = classify_point(color,model)
-                    coords += f" => {result}"
-                    class_count.append(result)
-                coords += "\n"
+        #generate points object
+        grid_points = Points(h_lines,v_lines,cv_image,cv_mask_image,model.dataset_meta["classes"],model.dataset_meta["palette"])
+        msg += "Points obtained."
 
-        cv2.imwrite(os.path.join(save_path,"lines.png"),cv_graygrid_image)
-        cv2.imwrite(os.path.join(save_path,"grid_lines.png"),cv_grid_image)
-        cv2.imwrite(os.path.join(save_path,"image_output.png"),cv_image)
-        if pt_mode:
-            class_types = list(set(class_count))
-            class_types.sort()
-            for class_type in class_types:
-                coords += f"{class_type}: {round(class_count.count(class_type)*100/len(class_count),3)}%\n"
-            cv2.imwrite(os.path.join(save_path,"mask_output.png"),cv_mask_image)
-        file = open(f"{save_path}/coordinates.txt", "w+")
-        file.write(coords)
-        file.close()
-    except Exception as e:
-        msg += "Unable to get points.\n"
-    return coords,msg
-
-
-
+    #except Exception as e:
+        #msg += "Unable to get points.\n"
+        #grid_points = Points()
+    return grid_points,msg
