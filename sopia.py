@@ -71,7 +71,8 @@ class Points:
                     f.write(logfile)
         #except:
             #logfile = "Unable to get points.\n"
-        return logfile
+        path = os.path.join(dir_path,save_path)
+        return logfile, path
 
     def classify_point(self,y,x):
         try:

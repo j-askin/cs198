@@ -361,7 +361,7 @@ def sopia_create():
                 data.points,data.output_text = sopia.get_points(data.static,data.img,data.grid_img,data.mask_img,data.model)
                 app.logger.info(data.points.classes)
                 data.point_classes = data.points.classes
-                data.point_text = data.points.save_points(data.static,"save")
+                data.point_text, _ = data.points.save_points(data.static,"save")
             case _:
                 print(f"Invalid create {request.form['action']}")
     data.get_paths()
@@ -386,7 +386,7 @@ def sopia_update_point():
                 pt_y = int(request.form["pt_y"])
                 pt_class = request.form["pt_class"]
                 data.output_text = data.points.update_point(pt_x,pt_y,pt_class)
-                data.point_text = data.points.save_points(data.static,"save")
+                data.point_text, _ = data.points.save_points(data.static,"save")
             case _:
                 print("Invalid action!")
     return render_template("sopia.html",data=data)
@@ -395,7 +395,8 @@ def sopia_update_point():
 def sopia_save_points():
     print("Saving Points To Text!")
     debug_mes()
-    data.point_text = data.points.save_points(data.static,"save",True,50)
+    data.point_text, path = data.points.save_points(data.static,"save",True,50)
+    data.output_text = f"Points have been saved to {path}."
     return render_template("sopia.html",data=data)
 
 
