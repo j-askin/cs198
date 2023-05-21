@@ -168,17 +168,14 @@
 				<hr>
 				<div class="element">
 					<button type="submit" name="action" value="get_points" style="width: 150px;" class="button"  form="form_create_points">Get Grid Points</button>
-				</div>
-				<hr>
-				<div class="element">
 					<button type="submit" name="action" value="get_all_points" style="width: 150px;" class="button"  form="form_compare_points">Compare Model Points</button>
 				</div>
 
 			</div>
 			<div class="output_window" id="output_window">
-				<pre style="height: 100px;" id="points_display" class="textdisplay" disabled=true>{{data.point_text}}</pre>
+				<pre id="points_display" class="points_display" disabled=true>{{data.point_text}}</pre>
 				<hr>
-				<pre id="output_display" class="textdisplay" disabled=true>{{data.output_text}}</pre>
+				<pre id="output_display" class="output_display" disabled=true>{{data.output_text}}</pre>
 				<hr>
 				<div class="element">
 					<input type="number" id="pt_y" name="pt_y" class="textinput" size=5 placeholder="Point Column" form="form_update_point" required></input>
