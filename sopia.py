@@ -56,8 +56,8 @@ class Points:
                         r1,r2,r3,r4 =max(self.h_lines[h]-pt_rad,0),min(self.h_lines[h]+pt_rad,image_overlay.shape[1]-1),max(self.v_lines[v]-pt_rad,0),min(self.v_lines[v]+pt_rad,image_overlay.shape[0]-1)
                         image_overlay[r3:r4,r1:r2,:3] = self.image[r3:r4,r1:r2]
                         mask_overlay[r3:r4,r1:r2,:3] = self.points[v,h]
-            mask_overlay = cv2.cvtColor(mask_overlay, cv2.COLOR_RGBA2BGRA)
             if pt_rad > 0:
+                mask_overlay = cv2.cvtColor(mask_overlay, cv2.COLOR_RGBA2BGRA)
                 cv2.imwrite(os.path.join(dir_path,save_path,"image_overlay.png"),image_overlay)
                 cv2.imwrite(os.path.join(dir_path,save_path,"mask_overlay.png"),mask_overlay)
                 cv2.imwrite(os.path.join(dir_path,save_path,"image.png"),self.image)
@@ -256,20 +256,20 @@ def get_points(dir_path=os.path.join(os.path.dirname(__file__),"images"),image_p
             cv_image = cv2.imread(os.path.join(dir_path,image_path))
         else:
             msg += "No image found.\n"
-            #raise Exception
+            raise Exception
         if verify_file(dir_path,grid_path):
             cv_grid_image = cv2.imread(os.path.join(dir_path,grid_path))
         else:
             msg += "No grid image found.\n"
-            #raise Exception
+            raise Exception
         if verify_file(dir_path,mask_path):
             cv_mask_image = cv2.imread(os.path.join(dir_path,mask_path))
         else:
             msg += "No segmented mask image found.\n"
-            #raise Exception
+            raise Exception
         if model in ["",None]:
-            msg += "No model loaded. Proceeding without point identification. \n"
-            #raise Exception
+            msg += "No model loaded.\n"
+            raise Exception
 
         image_l,image_w = cv_image.shape[0],cv_image.shape[1]
         cv_graygrid_image = cv2.cvtColor(cv_grid_image,cv2.COLOR_BGR2GRAY)

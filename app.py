@@ -30,6 +30,7 @@ class Data:
         self.model = "" #contains currently loaded model
         self.point_text, self.output_text = "","" #text to be displayed in output boxes
         self.points = sopia.Points() #list of points
+        self.point_classes = []
         #image data
         self.img_w,self.img_l = 0,0
 
@@ -128,12 +129,6 @@ class Data:
         self.mask_img = os.path.relpath(os.path.join(self.image_dir,os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1],"mask",self.mask_list[os.path.split(os.path.split(self.image_list[self.image_idx])[0])[1]][self.mask_idx]),self.template).replace("\\","/")
         self.config = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".py").replace("\\","/")
         self.pth = (os.path.splitext(os.path.relpath(os.path.join(self.model_dir,self.model_list[self.model_idx]),self.template))[0]+".pth").replace("\\","/")
-        print("Image paths:")
-        print(self.img)
-        print(self.grid_img)
-        print(self.mask_img)
-        print(self.config)
-        print(self.pth)
             
     def update_image(self,image_name):
         try:
@@ -286,7 +281,7 @@ def sopia_upload():
                 get_model('config_file','path_file')
                 app.logger.info("Model upload")
             case _:
-                app.logger.info("Invalid upload")
+                app.logger.info(f"Invalid upload {list(request.form.keys())[0]}")
         data.get_images()
         data.get_models()
         data.get_paths()
@@ -320,7 +315,7 @@ def sopia_update():
                 data.update_model(request.form["model"])
                 app.logger.info(data.model_idx)
             case _:
-                print("Invalid update")
+                print(f"Invalid update {request.form['action']}")
     return render_template("sopia.html",data=data)
 
 
@@ -337,47 +332,38 @@ def sopia_create():
     if request.method=="POST":
         match request.form["action"]:
             case "create_mask":
-                config = "models/" + data.model_list[data.model_idx].split(".")[0] + ".py"
-                pth = "models/" + data.model_list[data.model_idx].split(".")[0] + ".pth"
                 app.logger.info("Mask requested")
-                app.logger.info(data.static)
-                app.logger.info(config)
-                app.logger.info(pth)
-                image = data.image_list[data.image_idx]
-                app.logger.info(image)
-                data.model = sopia.load_model(data.static,config,pth)
-                data.mask_img,data.output_text = sopia.segment_image(data.static,image,data.model)
+                data.model = sopia.load_model(data.static,data.config,data.pth)
+                data.mask_img,data.output_text = sopia.segment_image(data.static,data.img,data.model)
             case "create_grid":
-                print("test xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-                row_count = request.form["row_count"]
-                col_count = request.form["col_count"]
-                row_space = request.form["row_space"]
-                col_space = request.form["col_space"]
-                grid_x = request.form["grid_x"]
-                grid_y = request.form["grid_y"]
+                row_count = int(request.form["row_count"])
+                col_count = int(request.form["col_count"])
+                row_space = int(request.form["row_space"])
+                col_space = int(request.form["col_space"])
+                grid_x = int(request.form["grid_x"])
+                grid_y = int(request.form["grid_y"])
                 #override image size and grid path with that of sample
                 image = data.image_list[data.image_idx]
                 if os.path.isfile(image):
                     with Image.open(image) as im:
                         grid_w,grid_l = im.size
                 else:
-                    grid_w = request.form["grid_w"]
-                    grid_l = request.form["grid_l"]
+                    grid_w = int(request.form["grid_w"])
+                    grid_l = int(request.form["grid_l"])
                 grid_name = request.form["grid_name"]
                 app.logger.info("Grid requested")
                 grid_img = os.path.split(data.image_list[data.image_idx])[0]+"/grid/"+grid_name+".grid.png"
                 app.logger.info(data.static)
                 app.logger.info(grid_img)
                 data.grid_img,data.output_text = sopia.create_grid(data.static,grid_img,row_count,col_count,row_space,col_space,grid_w,grid_l,grid_x,grid_y)
-            case "create_points":
-                img = pt_rad = data.image_list[data.image_idx]
-                grid_img = os.path.splitext(data.image_list[data.image_idx])[0]+"_grid.png"
-                mask_img = os.path.splitext(data.image_list[data.image_idx])[0]+"_mask.png"
-                data.image_list[data.image_idx]
-                data.points,data.output_text = sopia.get_points(data.root_dir,img,grid_img,mask_img,data.model,pt_rad)
+            case "get_points":
+                data.model = sopia.load_model(data.static,data.config,data.pth)
+                data.points,data.output_text = sopia.get_points(data.static,data.img,data.grid_img,data.mask_img,data.model)
+                app.logger.info(data.points.classes)
+                data.point_classes = data.points.classes
                 data.point_text = data.points.save_points(data.static,"save")
             case _:
-                print("Invalid create")
+                print(f"Invalid create {request.form['action']}")
     data.get_paths()
     return render_template("sopia.html",data=data)
 
@@ -396,8 +382,8 @@ def sopia_update_point():
     if request.method=="POST":
         match request.form["action"]:
             case "update_point":
-                pt_x = request.form["pt_x"]
-                pt_y = request.form["pt_x"]
+                pt_x = int(request.form["pt_x"])
+                pt_y = int(request.form["pt_y"])
                 pt_class = request.form["pt_class"]
                 data.output_text = data.points.update_point(pt_x,pt_y,pt_class)
                 data.point_text = data.points.save_points(data.static,"save")

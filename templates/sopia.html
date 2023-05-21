@@ -152,17 +152,22 @@
 						<button type="submit" name="action" value="update_model" class="button" form="form_update_model" required>Update Model</button>
 					</div>
 				</div>
-				
+				<hr>
+				<pre id="image_name_text" class="textdisplay" disabled=true>Loaded image:{{data.img}}</pre>
+				<pre id="grid_name_text" class="textdisplay" disabled=true>Loaded grid image:{{data.grid_img}}</pre>
+				<pre id="mask_name_text" class="textdisplay" disabled=true>Loaded mask image:{{data.mask_img}}</pre>
+				<pre id="model_cfg_name_text" class="textdisplay" disabled=true>Loaded model config:{{data.config}}</pre>
+				<pre id="model_pth_name_text" class="textdisplay" disabled=true>Loaded model path:{{data.pth}}</pre>
 				<hr>
 				<div class="element">
-					<input type="text" id="row_count" name="row_count" class="textinput" size=5 placeholder="# Of Rows" form="form_create_grid" required></input>
-					<input type="text" id="col_count" name="col_count" class="textinput" size=5 placeholder="# Of Columns" form="form_create_grid" required></input>
-					<input type="text" id="row_space" name="row_space" class="textinput" size=5 placeholder="Row Spacing" form="form_create_grid" required></input>
-					<input type="text" id="col_space" name="col_space" class="textinput" size=5 placeholder="Column Spacing" form="form_create_grid" required></input>
-					<input type="text" id="grid_w" name="grid_w" class="textinput" size=5 placeholder="Grid Width" form="form_create_grid" required></input>
-					<input type="text" id="grid_l" name="grid_l" class="textinput" size=5 placeholder="Grid Length" form="form_create_grid" required></input>
-					<input type="text" id="grid_x" name="grid_x" class="textinput" size=5 placeholder="Grid X Position" form="form_create_grid" required></input>
-					<input type="text" id="grid_y" name="grid_y" class="textinput" size=5 placeholder="Grid Y Position" form="form_create_grid" required></input>
+					<input type="number" id="row_count" name="row_count" class="textinput" size=5 placeholder="# Of Rows" form="form_create_grid" required></input>
+					<input type="number" id="col_count" name="col_count" class="textinput" size=5 placeholder="# Of Columns" form="form_create_grid" required></input>
+					<input type="number" id="row_space" name="row_space" class="textinput" size=5 placeholder="Row Spacing" form="form_create_grid" required></input>
+					<input type="number" id="col_space" name="col_space" class="textinput" size=5 placeholder="Column Spacing" form="form_create_grid" required></input>
+					<input type="number" id="grid_w" name="grid_w" class="textinput" size=5 placeholder="Grid Width" form="form_create_grid" required></input>
+					<input type="number" id="grid_l" name="grid_l" class="textinput" size=5 placeholder="Grid Length" form="form_create_grid" required></input>
+					<input type="number" id="grid_x" name="grid_x" class="textinput" size=5 placeholder="Grid X Position" form="form_create_grid" required></input>
+					<input type="number" id="grid_y" name="grid_y" class="textinput" size=5 placeholder="Grid Y Position" form="form_create_grid" required></input>
 					<input type="text" id="grid_name" name="grid_name" class="textinput" size=5 placeholder="Grid Name" form="form_create_grid" required></input>
 					<button type="submit" name="action" value="create_grid" class="button" form="form_create_grid">Create Grid</button>
 				</div>
@@ -186,8 +191,8 @@
 					<input type="number" id="pt_x" name="pt_x" class="textinput" size=5 placeholder="Point Row" form="form_update_point" required></input>
 					<select id="select_ptclass" class="select" name="pt_class" form="form_update_point" required>
 						<option value="UNKNOWN MATERIAL" selected class="option">"UNKNOWN MATERIAL"</option>
-						{% for class_index in range(data.classes|length) %}
-							<option value={{data.classes[class_index]}} class="option">{{data.classes[class_index]}}</option>
+						{% for class_index in range(data.point_classes|length) %}
+							<option value={{data.point_classes[class_index]}} class="option">{{data.point_classes[class_index]}}</option>
 						{% endfor %}
 					</select>
 					<button type="submit" name="action" value="update_point" style="width: 150px;" class="button" form="form_update_point">Update Point Class</button>
