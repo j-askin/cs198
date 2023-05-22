@@ -176,7 +176,7 @@ def load_model(dir_path=os.path.join(os.path.dirname(__file__),"models"),config_
     finally:
         return model
 
-def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"),image = "", model = None, mask_path = "mask.png", show=False):
+def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"), mask_path="mask.mask.png",image = "", model = None, show=False):
     msg = ""
     mask_image = ""
     out_path = ""
@@ -191,18 +191,16 @@ def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"),imag
             msg += f"Segmenting image {image}...\n"
             img_name = os.path.join(dir_path, image)
             result = inference_model(model, img_name)
-            mask_image = os.path.join(os.path.split(image)[0], "mask/") + (os.path.splitext(os.path.split(image)[1]))[0] + ".mask.png"
-            out_path = os.path.join(dir_path, mask_image)
-            show_result_pyplot(model=model, img=img_name, result=result, opacity=1.0, show=show,out_file=out_path)
+            mask_image = grid_image=os.path.join(dir_path, mask_path)
+            show_result_pyplot(model=model, img=img_name, result=result, opacity=1.0, show=show,out_file=mask_image)
             if not verify_file(dir_path,mask_image):
                 msg += "Unable to load segmenter config.\n"
                 raise Exception
     except Exception as e:
         mask_image = ""
-        out_path = ""
         msg += f"Unable to generate segmented mask image: {e}\n"
     finally:
-        msg += f"Segmented mask image generated to {out_path}.\n"
+        msg += f"Segmented mask image generated to {mask_image}.\n"
 
     return mask_image,msg
 
@@ -212,7 +210,7 @@ def str2int(string,default = 0):
     except:
         return default
 
-def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_path = "grid.png",
+def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_path = "grid.grid.png",
                 row_count = 5, col_count = 5, row_space = 320, col_space = 200,
                 grid_w = 1920, grid_l = 1200, grid_x = 320, grid_y = 200):
     msg=""

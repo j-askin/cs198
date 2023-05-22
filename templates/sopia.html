@@ -86,7 +86,7 @@
 							<button type="submit" name="action" value="clear_data" class="button" style="width: 150px;" form="form_clear">Clear Loaded Data</button>
 						</div>
 						<div style="width: 20%;">
-							<button type="submit" name="action" value="create_mask" style="width: 150px;" class="button" form="form_create_mask">Segment Image</button>
+							<button type="submit" name="action" value="get_all_points" style="width: 150px;" class="button"  form="form_compare_points">Compare Model Points</button>
 						</div>
 					</div>
 					<hr>
@@ -167,8 +167,14 @@
 				</div>
 				<hr>
 				<div class="element">
+					<input type="text" id="mask_name" name="mask_name" class="textinput" size=5 placeholder="Mask Name" form="form_create_mask" required></input>
+					<button type="submit" name="action" value="create_mask" class="button" form="form_create_mask">Segment Image</button>
+				</div>
+				
+				<hr>
+				<div class="element">
 					<button type="submit" name="action" value="get_points" style="width: 150px;" class="button"  form="form_create_points">Get Grid Points</button>
-					<button type="submit" name="action" value="get_all_points" style="width: 150px;" class="button"  form="form_compare_points">Compare Model Points</button>
+
 				</div>
 
 			</div>

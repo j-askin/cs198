@@ -333,8 +333,10 @@ def sopia_create():
         match request.form["action"]:
             case "create_mask":
                 app.logger.info("Mask requested")
+                mask_name = request.form["mask_name"]
+                mask_img = os.path.split(data.image_list[data.image_idx])[0]+"/mask/"+mask_name+".mask.png"
                 data.model = sopia.load_model(data.static,data.config,data.pth)
-                data.mask_img,data.output_text = sopia.segment_image(data.static,data.img,data.model)
+                data.mask_img,data.output_text = sopia.segment_image(data.static,mask_img,data.img,data.model)
             case "create_grid":
                 row_count = int(request.form["row_count"])
                 col_count = int(request.form["col_count"])
@@ -364,7 +366,6 @@ def sopia_create():
                 data.point_text, _ = data.points.save_points(data.static,"save")
             case _:
                 print(f"Invalid create {request.form['action']}")
-    data.get_paths()
     return render_template("sopia.html",data=data)
 
 
