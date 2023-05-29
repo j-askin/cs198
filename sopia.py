@@ -176,7 +176,7 @@ def load_model(dir_path=os.path.join(os.path.dirname(__file__),"models"),config_
     finally:
         return model
 
-def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"), mask_path="mask.mask.png",image = "", model = None, show=False):
+def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"), mask_path="mask.mask.png",image = "", model = None, show=False,correct_mask = True):
     msg = ""
     mask_image = ""
     out_path = ""
@@ -190,7 +190,12 @@ def segment_image(dir_path=os.path.join(os.path.dirname(__file__),"images"), mas
         else:
             msg += f"Segmenting image {image}...\n"
             img_name = os.path.join(dir_path, image)
-            result = inference_model(model, img_name)
+            if correct_mask: #Correct masks that have their classes shifted left by 1 class
+                model.dataset_meta["palette"]=model.dataset_meta["palette"][1:]+model.dataset_meta["palette"][:1]
+                result = inference_model(model, img_name)
+                model.dataset_meta["palette"]=model.dataset_meta["palette"][-1:]+model.dataset_meta["palette"][:-1]
+            else:
+                result = inference_model(model, img_name)
             mask_image = grid_image=os.path.join(dir_path, mask_path)
             show_result_pyplot(model=model, img=img_name, result=result, opacity=1.0, show=show,out_file=mask_image)
             if not verify_file(dir_path,mask_image):
