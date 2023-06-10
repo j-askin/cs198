@@ -170,7 +170,7 @@ def upload():
         data.get_images()
         data.get_models()
         data.get_paths()
-    return redirect(url_for('open_concretile'))
+    return render_template("concretile.html",data=data)
 
 #update function for all operations that involve updating the displayed images or loaded model
 @app.route("/concretile/update/",methods=['GET','POST'])
@@ -185,11 +185,14 @@ def update():
                 data.update_grid(request.form["grid"])
             case "update_mask":
                 data.update_mask(request.form["mask"])
+            case "update_mask2":
+                data.update_mask2(request.form["mask2"])
             case "update_model":
                 data.update_model(request.form["model"])
+                data.model = concretile.load_model(data.static,data.config,data.pth)
             case _:
                 pass
-    return redirect(url_for('open_concretile'))
+    return render_template("concretile.html",data=data)
 
 #create function for all operations that involve creating a new image
 @app.route("/concretile/create/",methods=['GET','POST'])
@@ -221,13 +224,42 @@ def create():
                 grid_img = os.path.split(data.image_list[data.image_idx])[0]+"/grid/"+grid_name+".grid.png"
                 data.grid_img,data.output_text = concretile.create_grid(data.static,grid_img,row_count,col_count,row_space,col_space,grid_w,grid_l,grid_x,grid_y)
             case "get_points":
-                data.model = concretile.load_model(data.static,data.config,data.pth)
                 data.points,data.output_text = concretile.get_points(data.static,data.img,data.grid_img,data.mask_img,data.model)
                 data.point_classes = data.points.classes
                 data.point_text, _ = data.points.save_points(data.static,"save")
+                data.points.make_tiles(data.static,pt_rad=500)
             case _:
                 pass
-    return redirect(url_for('open_concretile'))
+    return render_template("concretile.html",data=data)
+
+@app.route("/concretile/compare/points",methods=['GET','POST'])
+def compare_points():
+    if request.method=="POST":
+        match request.form["action"]:
+            case "compare_points":
+                #get points from both the real mask and the generated mask
+                print("Getting points")
+                points1,_ = concretile.get_points(data.static,data.img,data.grid_img,data.mask_img,data.model)
+                print("Point 1")
+                points2,_ = concretile.get_points(data.static,data.img,data.grid_img,data.mask_img2,data.model)
+                print("Point 2")
+                print("Step complete")
+                print(f"{points1.v_lines} {points1.v_lines} {points2.v_lines} {points2.h_lines}")
+                #check if points were successfully acquired
+                if len(points1.v_lines) == 0 or len(points1.h_lines) == 0 or len(points1.v_lines) != len(points2.v_lines) or len(points1.h_lines) != len(points2.h_lines):
+                    data.output_text = "Unable to acquire points\n"
+                else:
+                    acc_ctr = 0
+                    for v in range(len(points1.v_lines)):
+                        for h in range(len(points1.h_lines)):
+                            if points1.point_class[v][h] == points2.point_class[v][h]:
+                                acc_ctr += 1
+                            else:
+                                data.output_text += f"Point ({h}, {v}): {points1.point_class[v][h]} is not {points2.point_class[v][h]}\n"
+                    data.output_text += f"Total accuracy is {round(float(acc_ctr)/v*h,2)}%\n"
+            case _:
+                pass
+    return render_template("concretile.html",data=data)
 
 @app.route("/concretile/update/point",methods=['GET','POST'])
 def update_point():
@@ -239,64 +271,69 @@ def update_point():
                 pt_class = request.form["pt_class"]
                 data.output_text = data.points.update_point(pt_x,pt_y,pt_class)
                 data.point_text, _ = data.points.save_points(data.static,"save")
+                data.points.make_tiles(data.static,pt_rad=25)
             case _:
                 pass
-    return redirect(url_for('open_concretile'))
+    return render_template("concretile.html",data=data)
 
 @app.route("/concretile/save/points",methods=['GET','POST'])
 def save_points():
     data.point_text, path = data.points.save_points(data.static,"save",True,50)
     data.output_text = f"Points have been saved to {path}."
-    return redirect(url_for('open_concretile'))
+    return render_template("concretile.html",data=data)
 
 @app.route("/concretile/clear/",methods=['GET','POST'])
 def clear():
     data.clear()
-    return redirect(url_for('open_concretile'))
+    return render_template("concretile.html",data=data)
 
 @app.route("/concretile/upload/image/",methods=['GET','POST'])
 def upload_image():
-    return redirect(url_for('upload'))
+    return upload()
 
 @app.route("/concretile/upload/grid/",methods=['GET','POST'])
 def upload_grid():
-    return redirect(url_for('upload'))
+    return upload()
 
 @app.route("/concretile/upload/mask/",methods=['GET','POST'])
 def upload_mask():
-    return redirect(url_for('upload'))
+    return upload()
 
 @app.route("/concretile/upload/model/",methods=['GET','POST'])
 def upload_model():
-    return redirect(url_for('upload'))
+    return upload()
 
 @app.route("/concretile/update/image/",methods=['GET','POST'])
 def update_image():
-    return redirect(url_for('update'))
+    return update()
 
 @app.route("/concretile/update/grid/",methods=['GET','POST'])
 def update_grid():
-    return redirect(url_for('update'))
+    return update()
 
 @app.route("/concretile/update/mask/",methods=['GET','POST'])
 def update_mask():
-    return redirect(url_for('update'))
+    return update()
+
+@app.route("/concretile/update/mask2/",methods=['GET','POST'])
+def update_mask2():
+    return update()
 
 @app.route("/concretile/update/model/",methods=['GET','POST'])
 def update_model():
-    return redirect(url_for('update'))
+    return update()
 
 @app.route("/concretile/create/grid/",methods=['GET','POST'])
 def create_grid():
-    return redirect(url_for('create'))
+    return create()
 
 @app.route("/concretile/create/mask/",methods=['GET','POST'])
 def create_mask():
-    return redirect(url_for('create'))
+    return create()
 
 @app.route("/concretile/create/points/",methods=['GET','POST'])
 def create_points():
-    return redirect(url_for('create'))
+    return create()
 
 if __name__ == "__main__":
     app.run(debug=True)

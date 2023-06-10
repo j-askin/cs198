@@ -11,6 +11,8 @@ const image_board = document.getElementById("image_board");
 image_check.style.display="block";
 grid_check.style.display="block";
 mask_check.style.display="block";
+mask2_check.style.display="block";
+tile_check.style.display="block";
 zoom_slider.style.display="block";
 x_slider.style.display="block";
 y_slider.style.display="block";
@@ -20,6 +22,8 @@ y_slider.style.display="block";
 image_check.onclick=toggle_vis(this);
 grid_check.onclick=toggle_vis(this);
 mask_check.onclick=toggle_vis(this);
+mask2_check.onclick=toggle_vis(this);
+tile_check.onclick=toggle_vis(this);
 
 //zoom function
 let zoom = 1; //default zoom
