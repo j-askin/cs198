@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Concretile - A Point Counting Application</title>
+		<meta name="description" content="sopia project">
+		<meta name="author" content="miguel martinez">
+		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}">
+		<style>
+			body {background: #E5E5E5;
+				  overflow: hidden;
+				  margin: 0px;
+				  border: 0px;
+				  padding: 0px;}
+		</style>
+	</head>
+
+	<body>
+        <h1>Change your password</h1>
+        <hr>
+        <form id="form_changepass" class="form_action" action="{{url_for('changepass')}}" method="post">
+			<input type="username" id="username" name="username" class="textinput" size=5 placeholder="Username" required></input>
+			<input type="password" id="password" name="password" class="textinput" size=5 placeholder="Password" required></input>
+			<input type="password" id="newpassword" name="newpassword" class="textinput" size=5 placeholder="New Password" required></input>
+			<button type="submit" name="login" value="login" class="button">Change password</button>
+        </form>
+		<form id="form_open_login" class="form_action" action="{{url_for('login')}}">
+			<button type="submit" name="action" value="open_changepass" class="button">Return to login</button>
+		</form>
+        <hr>
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				<div>
+					<h3>{{messages[0]}}</h3>
+				</div>
+			{% endif %}
+		{% endwith %}
+	</body>
+</html>
+
+

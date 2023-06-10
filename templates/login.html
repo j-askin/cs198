@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Concretile - A Point Counting Application</title>
+		<meta name="description" content="sopia project">
+		<meta name="author" content="miguel martinez">
+		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}">
+		<style>
+			body {background: #E5E5E5;
+				  overflow: hidden;
+				  margin: 0px;
+				  border: 0px;
+				  padding: 0px;}
+		</style>
+	</head>
+
+	<body>
+        <h1>Register a new user</h1>
+        <hr>
+        <form id="form_register" class="form_action" action="{{url_for('login')}}" method="post">
+			<input type="username" id="username" name="username" class="textinput" size=5 placeholder="Username" required></input>
+			<input type="password" id="password" name="password" class="textinput" size=5 placeholder="Password" required></input>
+			<button type="submit" name="login" value="login" class="button">Log in</button>
+		</form>
+		<form id="form_open_register" class="form_action" action="{{url_for('register')}}">
+			<button type="submit" name="action" value="open_register" class="button">Register</button>
+		</form>
+		<form id="form_open_changepass" class="form_action" action="{{url_for('changepass')}}">
+			<button type="submit" name="action" value="open_changepass" class="button">Change Password</button>
+		</form>
+		<hr>
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				<div>
+					<h3>{{messages[0]}}</h3>
+				</div>
+			{% endif %}
+		{% endwith %}
+	</body>
+</html>
+
+
