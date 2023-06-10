@@ -1,5 +1,10 @@
+Include/
+Lib/
 mmsegmentation/
+Scripts/
 static/images/
 static/models/
 static/points/
 static/save/
+database.sqlite
+pyenv.cfg
