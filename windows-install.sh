@@ -3,7 +3,8 @@ set -x
 python -m venv .
 ./Scripts/activate.bat
 python -m ensurepip --upgrade
-pip install -U flask pillow opencv-python numpy flask-sqlalchemy torch torchvision torchaudio openmim waitress
+pip install -U flask pillow opencv-python albumentations numpy flask-sqlalchemy openmim waitress
+pip install -U torch torchvision torchaudio
 mim install mmengine
 mim install "mmcv>=2.0.0"
 git clone -b main https://github.com/open-mmlab/mmsegmentation.git
