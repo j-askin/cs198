@@ -1,0 +1,3 @@
+Based on the Lumenstone Dataset obtained from https://imaging.cs.msu.ru/en/research/geology/lumenstone
+Made by Alexander Khvostikov, Dmitry Korshunov, Andrey Krylov, and Mikhail Boguslavsky, LumenStone Dataset,2020.
+Distributed by Laboratory of Mathematical Methods of Image Processing, Lomonosov Moscow State University.
