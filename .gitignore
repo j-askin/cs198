@@ -2,9 +2,9 @@ Include/
 Lib/
 mmsegmentation/
 Scripts/
-static/images/
-static/models/
-static/points/
-static/save/
-database.sqlite
+src/static/images/
+src/static/models/
+src/static/points/
+src/static/save/
+src/database.sqlite
 pyenv.cfg

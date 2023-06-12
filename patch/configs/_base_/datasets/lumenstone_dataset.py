@@ -1,7 +1,7 @@
 # dataset settings
 dataset_type = 'LumenstoneDataset'
-data_root = 'data/lumenstone/'
-crop_size = (900, 1200)
+data_root = 'data/lumenstone_augmented'
+crop_size = (600, 800)
 #metainfo = dict(
 #    classes = (
 #        "Background", "Chalcopyrite", "Galena", "Magnetite",
@@ -25,19 +25,23 @@ train_pipeline = [
     dict(type='LoadAnnotations', reduce_zero_label=True),
     dict(
         type='RandomResize',
-        scale=(1200, 900),
+        scale=(800, 600),
         ratio_range=(0.5, 2.0),
         keep_ratio=True),
     dict(type='RandomCrop', crop_size=crop_size, cat_max_ratio=0.75),
     dict(type='RandomFlip', prob=0.5),
     dict(type='PhotoMetricDistortion'),
-    dict(type='PackSegInputs')
+    dict(type='PackSegInputs', meta_keys=dict(pad_shape=crop_size))
 ]
 test_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='Resize', scale=(1200, 900), keep_ratio=True),
+    dict(type='Resize', scale=(800, 600), keep_ratio=True),
     dict(type='LoadAnnotations', reduce_zero_label=True),
-    dict(type='PackSegInputs')
+    dict(type='PackSegInputs', meta_keys=dict(
+					      pad_shape=crop_size,
+					      ori_shape=(2547, 3396, 3),
+					      img_shape=crop_size
+					     ))
 ]
 img_ratios = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75]
 tta_pipeline = [
@@ -52,12 +56,12 @@ tta_pipeline = [
             [
                 dict(type='RandomFlip', prob=0., direction='horizontal'),
                 dict(type='RandomFlip', prob=1., direction='horizontal')
-            ], [dict(type='LoadAnnotations')], [dict(type='PackSegInputs')]
+            ], [dict(type='LoadAnnotations')], [dict(type='PackSegInputs', meta_keys=dict(pad_shape=crop_size))]
         ])
 ]
 train_dataloader = dict(
-    batch_size=4,
-    num_workers=4,
+    batch_size=2,
+    num_workers=2,
     persistent_workers=True,
     sampler=dict(type='InfiniteSampler', shuffle=True),
     dataset=dict(

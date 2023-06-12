@@ -187,6 +187,8 @@ class Points:
     def __init__(self,h_lines = [],v_lines = [],image = [],mask = [],classes = [],palette = []):
         self.h_lines = h_lines #positions of horizontal grid lines
         self.v_lines = v_lines #positions of vertical grid lines
+        self.h_lines.sort() #sort horizontal grid lines
+        self.v_lines.sort() #sort vertical grid lines
         self.image = image #pixel representation of the image
         self.mask = mask #pixel representation of the segmentation mask
         self.classes = classes #classes of material in the model
@@ -200,12 +202,16 @@ class Points:
 
     #Generates a tile for display. The tile is a temporary file located in the root of the static directory
     def make_tiles(self,dir_path=os.path.join(os.path.dirname(__file__),"static"),pt_rad=50):
+        logfile = ""
         try:
             if pt_rad>0:
-                #adjust pt_rad to never overlap with other tiles
-                pt_rad = min(pt_rad,(self.v_lines[-1]-self.v_lines[0])/2,(self.h_lines[-1]-self.h_lines[0])/2)
+                if len(self.v_lines) > 1:
+                    pt_rad = int(min(pt_rad,(self.v_lines[1]-self.v_lines[0])/2)) #prevent adjacent tiles from overlapping
+                    pt_rad = int(max(pt_rad,(self.v_lines[1]-self.v_lines[0])/4)) #ensure tiles are large enough to be visible
+                if len(self.h_lines) > 1:
+                    pt_rad = int(min(pt_rad,(self.h_lines[1]-self.h_lines[0])/2)) #prevent adjacent tiles from overlapping
+                    pt_rad = int(max(pt_rad,(self.h_lines[1]-self.h_lines[0])/4)) #ensure tiles are large enough to be visible
                 if not verify_path(dir_path,""):
-                    logfile="Error: unable to save tilemap\n"
                     raise Exception
                 mask_overlay = np.zeros(self.mask.shape, np.uint8)
                 mask_overlay = cv2.cvtColor(mask_overlay, cv2.COLOR_BGR2BGRA)
@@ -218,9 +224,10 @@ class Points:
                 mask_overlay = cv2.cvtColor(mask_overlay, cv2.COLOR_RGBA2BGRA)
                 print(mask_overlay)
                 cv2.imwrite(os.path.join(dir_path,"tile_overlay.png"),mask_overlay)
+                logfile += f"Saved tile overlay with tile width {pt_rad*2}"
         except:
-            logfile = "Unable to save tile overlay.\n"
-        return
+            logfile += "Unable to save tile overlay.\n"
+        return logfile
 
     def save_points(self,dir_path=os.path.dirname(__file__),save_path="save",log=False,pt_rad=0):
         logfile = ""
@@ -231,7 +238,12 @@ class Points:
                     logfile="Error: unable to save results to file\n"
                     raise Exception
             if pt_rad > 0:
-                pt_rad = min(pt_rad,(self.v_lines[-1]-self.v_lines[0])/2,(self.h_lines[-1]-self.h_lines[0])/2)
+                if len(self.v_lines) > 1:
+                    pt_rad = int(min(pt_rad,(self.v_lines[1]-self.v_lines[0])/2)) #prevent adjacent tiles from overlapping
+                    pt_rad = int(max(pt_rad,(self.v_lines[1]-self.v_lines[0])/4)) #ensure tiles are large enough to be visible
+                if len(self.h_lines) > 1:
+                    pt_rad = int(min(pt_rad,(self.h_lines[1]-self.h_lines[0])/2)) #prevent adjacent tiles from overlapping
+                    pt_rad = int(max(pt_rad,(self.h_lines[1]-self.h_lines[0])/4)) #ensure tiles are large enough to be visible
                 pt_path = os.path.join(save_path,"sample_points")
                 pt_mask_path = os.path.join(save_path,"mask_points")
                 if not(verify_path(dir_path,pt_path) and verify_path(dir_path,pt_mask_path)):
@@ -451,7 +463,7 @@ def create_grid(dir_path=os.path.join(os.path.dirname(__file__),"images"), grid_
 
 def get_points(dir_path=os.path.join(os.path.dirname(__file__),"images"),image_path="",grid_path="",mask_path="",model="",save_path="save",timestamp=True):
     msg = ""
-    if True:#try:
+    try:
         #verify images
         if verify_file(dir_path,image_path):
             cv_image = cv2.imread(os.path.join(dir_path,image_path))
@@ -474,7 +486,6 @@ def get_points(dir_path=os.path.join(os.path.dirname(__file__),"images"),image_p
 
         image_l,image_w = cv_image.shape[0],cv_image.shape[1]
         cv_graygrid_image = cv2.cvtColor(cv_grid_image,cv2.COLOR_BGR2GRAY)
-        cv2.imwrite(os.path.join(dir_path,"gridgray.png"),cv_graygrid_image)
         #Hough transform: obtain coordinates of grid intersections
         lines = cv2.HoughLines(cv_graygrid_image, 1, np.pi/180, 500)
         h_lines, v_lines = [],[]
@@ -498,13 +509,13 @@ def get_points(dir_path=os.path.join(os.path.dirname(__file__),"images"),image_p
         #verify that all points are within the image.
         if h_lines[-1] >= image_w and v_lines[-1] >= image_l:
             msg += "Grid image does not fit inside sample image.\n"
-            #raise Exception
+            raise Exception
 
         #generate points object
         grid_points = Points(h_lines,v_lines,cv_image,cv_mask_image,model.dataset_meta["classes"],model.dataset_meta["palette"])
         msg += "Points obtained."
 
-    #except Exception as e:
-        #msg += "Unable to get points.\n"
-        #grid_points = Points()
+    except Exception as e:
+        msg += "Unable to get points.\n"
+        grid_points = Points()
     return grid_points,msg

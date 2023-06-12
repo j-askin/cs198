@@ -1,11 +1,11 @@
 from augment_dataset import augment_directory
 
 #Dataset-specific settings for augmentation
-data_dir="lumenstone" #original data directory
-out_dir="lumenstone_augmented" #output data directory
+data_dir="sopia_xpl" #original data directory
+out_dir="sopia_xpl_augmented" #output data directory
 #All image-mask pairs are assumed to have the same filename up to an extension label.
-raw_train_ext = ".jpg" #extension for raw training image
-raw_val_ext = ".jpg" #extension for raw evaluation image
+raw_train_ext = ".png" #extension for raw training image
+raw_val_ext = ".png" #extension for raw evaluation image
 mask_train_ext = ".png" #extension for training mask image
 mask_val_ext = ".png" #extension for evaluation mask image
 train_count = 5 #number of additional training images  to generate per training image
