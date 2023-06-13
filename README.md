@@ -1,6 +1,125 @@
 Concretile is a web application designed to partially automate the process of point counting on concrete thin-section samples, with a focus on samples taken in the Philippines.
 To run the application locally, use the "run_local.sh" file in the root directory of the application. This will run the application as a local debug application that will not be visible to other computers. Alternatively, you can use the "run_remote.sh" file in the root directory of the application and run the application as a remote server. In both cases, you can access the application from the same computer by opening your browser and entering the url: "http://localhost:5000".
-
+```bash
+cs198
+│   linux-fix_mmsegmenation.sh
+│   linux-install.sh
+│   linux-install_gpu-cu117.sh
+│   linux-install_gpu-cu118.sh
+│   linux-install_gpu-rocm542.sh
+│   linux-run-remote.sh
+│   linux-run_local.sh
+│   linux-train_model.sh
+│   README.md
+│   windows-fix_mmsegmenation.sh
+│   windows-install.sh
+│   windows-install_gpu-cu117.sh
+│   windows-install_gpu-cu118.sh
+│   windows-run_local.sh
+│   windows-run_remote.sh
+│   windows-train_model.sh
+|
+│├───mmsegmentation
+│   ├───configs
+│   │   ├───custom
+│   │   │
+│   │   └───_base_
+│   │       └───datasets
+│   │
+│   ├───data
+│   │
+│   ├───mmseg
+│   │   └───datasets
+│   │
+│   └───work_dirs
+│
+├───patch
+│   ├───configs
+│   │   ├───custom
+│   │   │       fastfcn_r50-d32_jpu_psp_4xb4-80k_lumenstone-600x800.py
+│   │   │       fastfcn_r50-d32_jpu_psp_4xb4-80k_sopia-600x800.py
+│   │   │       upernet_r50_4xb4-80k_lumenstone-600x800.py
+│   │   │       ...
+│   │   │
+│   │   └───_base_
+│   │       └───datasets
+│   │               lumenstone_dataset.py
+│   │               sopia_dataset.py
+│   │
+│   ├───data
+│   │       augment_dataset.py
+│   │       augment_lumenstone.py
+│   │       augment_sopia.py
+│   │       augment_sopia_xpl.py
+│   │       convert_lumenstone.py
+│   │       convert_mask.py
+│   │       convert_sopia.py
+│   │       convert_sopia_xpl.py
+│   │       generate_sopia_xpl.py
+│   │
+│   └───mmseg
+│       └───datasets
+│               lumenstone.py
+│               sopia.py
+│               __init__.py
+│
+├───Sample Data
+│   │   INFO.txt
+│   │
+│   └───lumenstone
+│       ├───raw
+│       │   ├───train
+│       │   │       01.jpg
+│       │   │       02.jpg
+│       │   │       ...
+│       │   │
+│       │   └───val
+│       │           01.jpg
+│       │           02.jpg
+│       │           ...
+│       │
+│       └───seg
+│           ├───train
+│           │       01.png
+│           │       02.png
+│           │       ...
+│           │
+│           └───val
+│                   01.png
+│                   02.png
+│                   ...
+│
+└───src
+    │   app.py
+    │   concretile.py
+    │
+    ├───static
+    │   │   scripts.js
+    │   │   styles.css
+    │   │
+    │   ├───images
+    │   │   └───uploads
+    │   │       │   10.jpg
+    │   │       │
+    │   │       ├───grid
+    │   │       │       example_grid.grid.png
+    │   │       │
+    │   │       └───mask
+    │   │               10.mask.png
+    │   │               gen_10.mask.png
+    │   │
+    │   ├───models
+    │   │   └───lumenstone_fastfcn
+    │   │           lumenstone_fastfcn.pth
+    │   │           lumenstone_fastfcn.py
+    │   │
+    │   └───save
+    └───templates
+            changepass.html
+            concretile.html
+            login.html
+            register.html
+```
 Installation instructions:
 1. Download the application from this github repository: https://github.com/j-askin/cs198
 2. Run the "windows-install.sh" or the "linux-install.sh" file depending on your operating system to install all required packages and dependencies. Be sure to have around 3GB of free space beforehand.
