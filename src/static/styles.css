@@ -56,7 +56,7 @@
   color:rgba(0, 0, 0, 1); background-color: rgba(255, 255, 255,1); width:320px; height: 30px; position:relative; font-family:Inter; text-align:left; font-size:14px; letter-spacing:0;z-index:2; white-space: pre-wrap; overflow-wrap: break-word;
 }
 .button {
-  margin: 0px; border: 0px; padding: 0px; background-color:rgba(255, 255, 255, 0.5); width:100px; height:30px; position:relative; z-index:2; cursor: pointer;
+  margin: 10px; border: 10px; padding: 10px; background-color:rgba(255, 255, 255, 0.5); min-width:100px; width:fit-content; height:30px; position:relative; z-index:2; cursor: pointer; text-align: center; 
 }
 
 .select {

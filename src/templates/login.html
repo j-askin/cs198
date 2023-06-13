@@ -16,19 +16,19 @@
 	</head>
 
 	<body>
-        <h1>Register a new user</h1>
+        <h1>Login to Concretile</h1>
         <hr>
         <form id="form_register" class="form_action" action="{{url_for('login')}}" method="post">
 			<input type="username" id="username" name="username" class="textinput" size=5 placeholder="Username" required></input>
 			<input type="password" id="password" name="password" class="textinput" size=5 placeholder="Password" required></input>
 			<button type="submit" name="login" value="login" class="button">Log in</button>
 		</form>
-		<form id="form_open_register" class="form_action" action="{{url_for('register')}}">
-			<button type="submit" name="action" value="open_register" class="button">Register</button>
-		</form>
-		<form id="form_open_changepass" class="form_action" action="{{url_for('changepass')}}">
-			<button type="submit" name="action" value="open_changepass" class="button">Change Password</button>
-		</form>
+		<form id="form_open_register" class="form_action" action="{{url_for('register')}}"></form>
+		<form id="form_open_changepass" class="form_action" action="{{url_for('changepass')}}"></form>
+		<div class="btn-group">
+			<button type="submit" name="action" value="open_register" class="button" form="form_open_register">Register</button>
+			<button type="submit" name="action" value="open_changepass" class="button" form="form_open_changepass">Change Password</button>
+		</div>
 		<hr>
 		{% with messages = get_flashed_messages() %}
 			{% if messages %}
